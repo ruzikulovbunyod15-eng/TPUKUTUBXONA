@@ -1,0 +1,147 @@
+{% extends "library/base.html" %}
+
+{% block title %}Kitobni tahrirlash{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div class="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
+
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-10">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#1554d1] mb-2">
+                    Ustoz kabineti
+                </p>
+                <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-900">
+                    Kitobni tahrirlash
+                </h1>
+                <p class="text-slate-500 mt-2">
+                    Kitob ma’lumotlarini yangilang
+                </p>
+            </div>
+
+            <a href="{% url 'teacher_my_books' %}"
+               class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-white border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition shadow-sm">
+                ← Mening kitoblarim
+            </a>
+        </div>
+
+        <!-- CURRENT BOOK INFO -->
+        <div class="mb-8 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row gap-6">
+            
+            <!-- COVER -->
+            <div class="w-32 h-44 shrink-0">
+                {% if book.cover %}
+                    <img src="{{ book.cover.url }}" class="w-full h-full object-cover rounded-xl border">
+                {% else %}
+                    <div class="w-full h-full flex items-center justify-center bg-blue-100 rounded-xl text-4xl">
+                        📘
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- INFO -->
+            <div class="flex-1">
+                <h2 class="text-xl font-bold text-slate-800">{{ book.title }}</h2>
+                <p class="text-slate-500 mt-1">{{ book.author }}</p>
+
+                <div class="mt-4 flex gap-3 flex-wrap">
+                    {% if book.pdf_file %}
+                        <a href="{{ book.pdf_file.url }}" target="_blank"
+                           class="px-4 py-2 bg-blue-100 text-blue-700 rounded-xl font-medium">
+                            📄 PDF
+                        </a>
+                    {% endif %}
+
+                    {% if book.cover %}
+                        <a href="{{ book.cover.url }}" target="_blank"
+                           class="px-4 py-2 bg-purple-100 text-purple-700 rounded-xl font-medium">
+                            🖼 Muqova
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- FORM -->
+        <div class="bg-white rounded-[32px] shadow-xl border border-blue-100 overflow-hidden">
+
+            <div class="px-8 py-6 border-b bg-blue-50">
+                <h2 class="text-xl font-bold text-slate-800">Tahrirlash</h2>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="p-8">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                <div class="mb-6 bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl">
+                    {{ form.errors }}
+                </div>
+                {% endif %}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <div class="md:col-span-2">
+                        <label class="label">Kitob nomi</label>
+                        {{ form.title }}
+                    </div>
+
+                    <div>
+                        <label class="label">Muallif</label>
+                        {{ form.author }}
+                    </div>
+
+                    <div>
+                        <label class="label">Bo‘lim</label>
+                        {{ form.category }}
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="label">Kalit so‘zlar</label>
+                        {{ form.keywords }}
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="label">Tavsif</label>
+                        {{ form.description }}
+                    </div>
+
+                    <!-- PDF -->
+                    <div class="md:col-span-2">
+                        <label class="label">Yangi PDF (ixtiyoriy)</label>
+                        <div class="upload-box">
+                            {{ form.pdf_file }}
+                            <p class="hint mt-2">Yangi PDF yuklasangiz eski fayl almashtiriladi</p>
+                        </div>
+                    </div>
+
+                    <!-- COVER -->
+                    <div class="md:col-span-2">
+                        <label class="label">Yangi muqova (ixtiyoriy)</label>
+                        <div class="upload-box">
+                            {{ form.cover }}
+                            <p class="hint mt-2">Yangi rasm yuklasangiz muqova yangilanadi</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- BUTTONS -->
+                <div class="flex gap-4 mt-10">
+                    <button type="submit"
+                            class="flex-1 bg-[#1e3a8a] text-white py-4 rounded-2xl font-semibold hover:bg-[#172554] transition">
+                        💾 Saqlash
+                    </button>
+
+                    <a href="{% url 'teacher_my_books' %}"
+                       class="flex-1 text-center border py-4 rounded-2xl">
+                        Bekor qilish
+                    </a>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

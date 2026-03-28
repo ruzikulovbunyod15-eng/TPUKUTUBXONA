@@ -1,0 +1,162 @@
+{% extends "library/base.html" %}
+
+{% block title %}Profilni tahrirlash - TPU{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-10 px-6 lg:px-10">
+    <div class="max-w-5xl mx-auto">
+
+        <!-- Header -->
+        <div class="flex flex-col gap-4 mb-8">
+            <a href="{% url 'admin_profile' %}"
+               class="inline-flex items-center text-sm font-bold text-slate-400 hover:text-[#4318FF] transition w-fit">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Profilga qaytish
+            </a>
+
+            <div>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-[#1B2559]">Profilni tahrirlash</h1>
+                <p class="text-slate-400 font-medium mt-2">Shaxsiy ma'lumotlaringizni yangilang</p>
+            </div>
+        </div>
+
+        <!-- Card -->
+        <div class="bg-white rounded-[32px] p-8 lg:p-12 shadow-sm border border-slate-100">
+            <form method="post" enctype="multipart/form-data" class="space-y-8">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-red-700 text-sm">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Profile preview -->
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5 pb-8 border-b border-slate-100">
+                    <div class="w-24 h-24 rounded-3xl overflow-hidden bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center text-3xl font-bold shadow-lg">
+                        {% if form.instance.photo %}
+                            <img src="{{ form.instance.photo.url }}" alt="Profil rasmi" class="w-full h-full object-cover">
+                        {% elif request.user.first_name %}
+                            {{ request.user.first_name|slice:":1"|upper }}
+                        {% else %}
+                            {{ request.user.username|slice:":1"|upper }}
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <h2 class="text-xl font-bold text-[#1B2559]">
+                            {% if request.user.first_name or request.user.last_name %}
+                                {{ request.user.first_name }} {{ request.user.last_name }}
+                            {% else %}
+                                {{ request.user.username }}
+                            {% endif %}
+                        </h2>
+
+                        {% if request.user.is_superuser %}
+                            <p class="text-sm text-slate-400 mt-1">Super Admin</p>
+                        {% elif request.user.is_staff %}
+                            <p class="text-sm text-slate-400 mt-1">Kutubxonachi</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Form grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    {% for field in form %}
+                    <div class="flex flex-col gap-2 {% if field.name == 'username' or field.name == 'photo' %}md:col-span-2{% endif %}">
+                        <label class="text-sm font-bold text-[#1B2559] ml-1">
+                            {{ field.label }}
+                        </label>
+
+                        <div class="relative">
+                            {% if field.name == 'photo' %}
+                                <div class="rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50/50 px-5 py-5">
+                                    {{ field }}
+                                    <p class="text-xs text-slate-400 mt-3">
+                                        Profil rasmi yuklash ixtiyoriy. Tavsiya etilgan format: JPG, PNG.
+                                    </p>
+                                </div>
+                            {% else %}
+                                {{ field }}
+                            {% endif %}
+                        </div>
+
+                        {% if field.errors %}
+                            <p class="text-xs text-red-500 mt-1 font-medium">{{ field.errors.0 }}</p>
+                        {% endif %}
+
+                        {% if field.help_text %}
+                            <p class="text-[11px] text-slate-400 mt-1">{{ field.help_text }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Actions -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-slate-100">
+                    <button type="submit"
+                            class="px-10 py-4 bg-[#4318FF] text-white rounded-2xl font-bold hover:shadow-lg hover:shadow-indigo-200 transition-all flex-1 sm:flex-none">
+                        O'zgarishlarni saqlash
+                    </button>
+
+                    <a href="{% url 'admin_profile' %}"
+                       class="px-10 py-4 bg-[#F4F7FE] text-[#1B2559] rounded-2xl font-bold hover:bg-slate-200 transition-all text-center flex-1 sm:flex-none">
+                        Bekor qilish
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 14px 18px;
+        background-color: #F4F7FE;
+        border: 2px solid transparent;
+        border-radius: 16px;
+        font-size: 15px;
+        font-weight: 500;
+        color: #1B2559;
+        outline: none;
+        transition: all 0.2s ease-in-out;
+    }
+
+    textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    input:focus, select:focus, textarea:focus {
+        background-color: #ffffff;
+        border-color: #4318FF;
+        box-shadow: 0 10px 20px -10px rgba(67, 24, 255, 0.2);
+    }
+
+    input::placeholder, textarea::placeholder {
+        color: #A3AED0;
+    }
+
+    input[type="file"] {
+        border: none;
+        background: transparent;
+        padding: 0;
+        box-shadow: none;
+    }
+
+    .errorlist {
+        display: none;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,786 @@
+{% extends "library/base.html" %}
+
+{% block title %}Admin Dashboard - Tpulib{% endblock %}
+
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    :root {
+        --primary: #1e3a8a;
+        --primary-light: #3b82f6;
+        --bg-soft: #eff6ff;
+    }
+
+    * {
+        font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    .glass {
+        background: rgba(255, 255, 255, 0.82);
+        backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.75);
+    }
+
+    .sidebar-link.active {
+        background: #eff6ff;
+        color: #1e3a8a;
+        font-weight: 700;
+    }
+
+    .sidebar-link.active .icon-wrap {
+        background: #dbeafe;
+    }
+
+    .section-panel {
+        display: none;
+    }
+
+    .section-panel.active {
+        display: block;
+    }
+
+    .action-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 24px;
+        padding: 22px;
+        transition: 0.25s ease;
+    }
+
+    .action-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 40px rgba(37, 99, 235, 0.08);
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 12px 18px;
+        border-radius: 16px;
+        font-weight: 600;
+        transition: 0.2s ease;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: #2563eb;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #1d4ed8;
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+    }
+
+    .btn-secondary:hover {
+        background: #f8fafc;
+    }
+
+    .btn-dark {
+        background: #0f172a;
+        color: white;
+    }
+
+    .btn-dark:hover {
+        background: #020617;
+    }
+
+    .mini-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    @media (max-width: 1024px) {
+        .admin-layout {
+            flex-direction: column;
+        }
+
+        .admin-sidebar {
+            width: 100%;
+        }
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-sky-50 rounded-[28px] overflow-hidden shadow-sm">
+    <div class="flex min-h-screen admin-layout">
+        <!-- SIDEBAR -->
+        <aside class="w-72 bg-white border-r border-slate-200 flex flex-col shrink-0 admin-sidebar">
+            <div class="p-8 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xl shadow-lg">
+                        📚
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-extrabold text-[#1e3a8a] leading-none">Tpulib</h1>
+                        <p class="text-sm text-slate-500 mt-1">
+                            {% if request.user.is_superuser %}Super Admin{% else %}Admin{% endif %} Panel
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 px-5 py-6 space-y-2">
+                <button type="button"
+                        data-section="dashboard"
+                        class="sidebar-link active w-full flex items-center gap-3 px-5 py-4 rounded-2xl text-slate-700 hover:bg-slate-50 transition">
+                    <span class="icon-wrap w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">📊</span>
+                    <span>Dashboard</span>
+                </button>
+
+                <button type="button"
+                        data-section="students"
+                        class="sidebar-link w-full flex items-center gap-3 px-5 py-4 rounded-2xl text-slate-700 hover:bg-slate-50 transition">
+                    <span class="icon-wrap w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">👨‍🎓</span>
+                    <span>Talabalar</span>
+                </button>
+
+                <button type="button"
+                        data-section="teachers"
+                        class="sidebar-link w-full flex items-center gap-3 px-5 py-4 rounded-2xl text-slate-700 hover:bg-slate-50 transition">
+                    <span class="icon-wrap w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">👩‍🏫</span>
+                    <span>O‘qituvchilar</span>
+                </button>
+
+                <button type="button"
+                        data-section="books"
+                        class="sidebar-link w-full flex items-center gap-3 px-5 py-4 rounded-2xl text-slate-700 hover:bg-slate-50 transition">
+                    <span class="icon-wrap w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">📚</span>
+                    <span>Kitoblar</span>
+                </button>
+
+                <button type="button"
+                        data-section="stats"
+                        class="sidebar-link w-full flex items-center gap-3 px-5 py-4 rounded-2xl text-slate-700 hover:bg-slate-50 transition">
+                    <span class="icon-wrap w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">📈</span>
+                    <span>Statistika</span>
+                </button>
+
+                <button type="button"
+                        data-section="profile"
+                        class="sidebar-link w-full flex items-center gap-3 px-5 py-4 rounded-2xl text-slate-700 hover:bg-slate-50 transition">
+                    <span class="icon-wrap w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">👤</span>
+                    <span>Profil</span>
+                </button>
+            </nav>
+
+            <div class="p-5 border-t border-slate-100 space-y-3">
+                <a href="{% url 'home_page' %}"
+                   class="flex items-center gap-3 px-5 py-4 text-slate-700 hover:bg-slate-50 rounded-2xl font-medium transition">
+                    <span class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">🏠</span>
+                    <span>Bosh sahifa</span>
+                </a>
+
+                <a href="{% url 'logout' %}"
+                   class="flex items-center gap-3 px-5 py-4 text-red-600 hover:bg-red-50 rounded-2xl font-medium transition">
+                    <span class="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-lg">🚪</span>
+                    <span>Chiqish</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="flex-1 overflow-auto">
+            <!-- TOPBAR -->
+            <div class="bg-white/90 backdrop-blur border-b border-slate-200 px-8 lg:px-10 py-5 flex items-center justify-between sticky top-0 z-20">
+                <div>
+                    <h2 id="page-title" class="text-2xl font-bold text-slate-800">Dashboard</h2>
+                    <p id="page-subtitle" class="text-sm text-slate-500 mt-1">Kutubxona boshqaruv paneli</p>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="hidden sm:flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-2xl text-sm font-medium">
+                        <span class="text-emerald-500">●</span>
+                        Online
+                    </div>
+
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-semibold text-slate-800">
+                            {% if request.user.first_name or request.user.last_name %}
+                                {{ request.user.first_name }} {{ request.user.last_name }}
+                            {% else %}
+                                {{ request.user.username }}
+                            {% endif %}
+                        </p>
+                        <p class="text-xs text-slate-400">
+                            {% if request.user.is_superuser %}Super Admin{% else %}Admin{% endif %}
+                        </p>
+                    </div>
+
+                    <div class="w-11 h-11 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg">
+                        {{ request.user.username|slice:":1"|upper }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-8 lg:p-10">
+                <!-- DASHBOARD -->
+                <section id="dashboard-section" class="section-panel active">
+                    <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-6">
+                        <div class="glass rounded-3xl p-6 shadow-lg">
+                            <p class="text-slate-500 text-sm">Jami kitoblar</p>
+                            <p class="text-4xl font-extrabold text-[#1e3a8a] mt-4">{{ books_count|default:0 }}</p>
+                        </div>
+
+                        <div class="glass rounded-3xl p-6 shadow-lg">
+                            <p class="text-slate-500 text-sm">Jami talabalar</p>
+                            <p class="text-4xl font-extrabold text-[#1e3a8a] mt-4">{{ students_count|default:0 }}</p>
+                        </div>
+
+                        <div class="glass rounded-3xl p-6 shadow-lg">
+                            <p class="text-slate-500 text-sm">Jami o‘qituvchilar</p>
+                            <p class="text-4xl font-extrabold text-[#1e3a8a] mt-4">{{ teachers_count|default:0 }}</p>
+                        </div>
+
+                        <div class="glass rounded-3xl p-6 shadow-lg">
+                            <p class="text-slate-500 text-sm">Jami foydalanuvchilar</p>
+                            <p class="text-4xl font-extrabold text-[#1e3a8a] mt-4">{{ students_count|add:teachers_count|default:0 }}</p>
+                        </div>
+
+                        <div class="glass rounded-3xl p-6 shadow-lg">
+                            <p class="text-slate-500 text-sm">Oxirgi talabalar</p>
+                            <p class="text-4xl font-extrabold text-[#1e3a8a] mt-4">{{ latest_students|length }}</p>
+                        </div>
+
+                        <div class="rounded-3xl p-6 shadow-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white">
+                            <p class="text-blue-100 text-sm">Oxirgi yuklangan</p>
+                            <p class="text-4xl font-extrabold mt-4">{{ latest_books|length }}</p>
+                            <p class="text-sm mt-1">kitob</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 mt-8">
+                        <div class="xl:col-span-8 glass rounded-3xl p-8 shadow-lg">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="font-semibold text-lg text-slate-800">Har oy qo‘shilgan kitoblar</h3>
+                                <span class="text-sm text-slate-500">Oxirgi 6 oy</span>
+                            </div>
+                            <canvas id="monthlyChart" height="110"></canvas>
+                        </div>
+
+                        <div class="xl:col-span-4 glass rounded-3xl p-8 shadow-lg">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="font-semibold text-lg text-slate-800">Foydalanuvchilar nisbati</h3>
+                            </div>
+                            <canvas id="userRatioChart" height="220"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
+                        <div class="glass rounded-3xl p-8 shadow-lg">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="font-semibold text-lg text-slate-800">Oxirgi yuklangan kitoblar</h3>
+                                <a href="{% url 'books_list' %}" class="text-sm text-blue-600 hover:underline">Barchasi</a>
+                            </div>
+
+                            <div class="space-y-4">
+                                {% for book in latest_books %}
+                                <div class="flex items-center justify-between gap-4 p-4 bg-white rounded-2xl border border-slate-100">
+                                    <div class="min-w-0">
+                                        <p class="font-medium text-slate-800 truncate">{{ book.title }}</p>
+                                        <p class="text-sm text-slate-500 truncate">
+                                            {{ book.author }}{% if book.category %} • {{ book.category.name }}{% endif %}
+                                        </p>
+                                    </div>
+                                    <span class="text-xs text-slate-400 whitespace-nowrap">
+                                        {{ book.created_at|date:"d.m.Y" }}
+                                    </span>
+                                </div>
+                                {% empty %}
+                                <div class="p-6 bg-white rounded-2xl border border-slate-100 text-slate-500 text-center">
+                                    Hozircha kitoblar mavjud emas.
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="glass rounded-3xl p-8 shadow-lg">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="font-semibold text-lg text-slate-800">Oxirgi qo‘shilgan talabalar</h3>
+                                <a href="{% url 'students_list' %}" class="text-sm text-blue-600 hover:underline">Barchasi</a>
+                            </div>
+
+                            <div class="space-y-4">
+                                {% for student in latest_students %}
+                                <div class="flex items-center justify-between gap-4 p-4 bg-white rounded-2xl border border-slate-100">
+                                    <div class="min-w-0">
+                                        <p class="font-medium text-slate-800 truncate">
+                                            {{ student.first_name }} {{ student.last_name }}
+                                        </p>
+                                        <p class="text-sm text-slate-500 truncate">
+                                            {% if student.group %}{{ student.group }}{% else %}Talaba{% endif %}
+                                        </p>
+                                    </div>
+                                    <span class="text-xs text-slate-400 whitespace-nowrap">
+                                        {{ student.created_at|date:"d.m.Y" }}
+                                    </span>
+                                </div>
+                                {% empty %}
+                                <div class="p-6 bg-white rounded-2xl border border-slate-100 text-slate-500 text-center">
+                                    Hozircha talabalar mavjud emas.
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- STUDENTS -->
+                <section id="students-section" class="section-panel">
+                    <div class="glass rounded-3xl p-8 shadow-lg">
+                        <div class="flex flex-wrap items-start justify-between gap-4 mb-8">
+                            <div>
+                                <div class="mini-tag mb-3">👨‍🎓 Talabalar bo‘limi</div>
+                                <h3 class="text-3xl font-bold text-slate-800">Talabalar boshqaruvi</h3>
+                                <p class="text-slate-500 mt-2">Talabalarni ko‘rish, qo‘shish, tahrirlash va o‘chirish uchun kerakli havolalar.</p>
+                            </div>
+
+                            <button type="button"
+                                    onclick="showSection('dashboard')"
+                                    class="action-btn btn-secondary">
+                                ← Dashboardga qaytish
+                            </button>
+                        </div>
+
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div class="action-card">
+                                <div class="text-4xl mb-4">📋</div>
+                                <h4 class="text-xl font-bold text-slate-800 mb-2">Talabalar ro‘yxati</h4>
+                                <p class="text-slate-500 leading-7 mb-5">Barcha talabalarni ko‘rish, qidirish va filter qilish sahifasiga o‘tish.</p>
+                                <a href="{% url 'students_list' %}" class="action-btn btn-primary w-full">Ro‘yxatga o‘tish</a>
+                            </div>
+
+                            <div class="action-card">
+                                <div class="text-4xl mb-4">➕</div>
+                                <h4 class="text-xl font-bold text-slate-800 mb-2">Talaba qo‘shish</h4>
+                                <p class="text-slate-500 leading-7 mb-5">Yangi talaba yaratish, login va parol generatsiya qilish.</p>
+                                <a href="{% url 'student_add' %}" class="action-btn btn-dark w-full">Talaba qo‘shish</a>
+                            </div>
+
+                            <div class="action-card">
+                                <div class="text-4xl mb-4">🏠</div>
+                                <h4 class="text-xl font-bold text-slate-800 mb-2">Ortga qaytish</h4>
+                                <p class="text-slate-500 leading-7 mb-5">Dashboardga yoki bosh sahifaga qulay qaytish.</p>
+                                <div class="flex flex-col gap-3">
+                                    <button type="button" onclick="showSection('dashboard')" class="action-btn btn-secondary w-full">Dashboard</button>
+                                    <a href="{% url 'home_page' %}" class="action-btn btn-secondary w-full">Bosh sahifa</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TEACHERS -->
+                <section id="teachers-section" class="section-panel">
+                    <div class="glass rounded-3xl p-8 shadow-lg">
+                        <div class="flex flex-wrap items-start justify-between gap-4 mb-8">
+                            <div>
+                                <div class="mini-tag mb-3">👩‍🏫 O‘qituvchilar bo‘limi</div>
+                                <h3 class="text-3xl font-bold text-slate-800">O‘qituvchilar boshqaruvi</h3>
+                                <p class="text-slate-500 mt-2">O‘qituvchilarni ko‘rish, qo‘shish va boshqarish uchun barcha kerakli bo‘limlar.</p>
+                            </div>
+
+                            <button type="button"
+                                    onclick="showSection('dashboard')"
+                                    class="action-btn btn-secondary">
+                                ← Dashboardga qaytish
+                            </button>
+                        </div>
+
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div class="action-card">
+                                <div class="text-4xl mb-4">📋</div>
+                                <h4 class="text-xl font-bold text-slate-800 mb-2">O‘qituvchilar ro‘yxati</h4>
+                                <p class="text-slate-500 leading-7 mb-5">Barcha o‘qituvchilar ro‘yxati, qidiruv va boshqaruv sahifasi.</p>
+                                <a href="{% url 'teachers_list' %}" class="action-btn btn-primary w-full">Ro‘yxatga o‘tish</a>
+                            </div>
+
+                            <div class="action-card">
+                                <div class="text-4xl mb-4">➕</div>
+                                <h4 class="text-xl font-bold text-slate-800 mb-2">O‘qituvchi qo‘shish</h4>
+                                <p class="text-slate-500 leading-7 mb-5">Yangi o‘qituvchi yaratish va tizimga kiritish.</p>
+                                <a href="{% url 'teacher_add' %}" class="action-btn btn-dark w-full">O‘qituvchi qo‘shish</a>
+                            </div>
+
+                            <div class="action-card">
+                                <div class="text-4xl mb-4">🏠</div>
+                                <h4 class="text-xl font-bold text-slate-800 mb-2">Ortga qaytish</h4>
+                                <p class="text-slate-500 leading-7 mb-5">Dashboardga yoki bosh sahifaga tezkor qaytish.</p>
+                                <div class="flex flex-col gap-3">
+                                    <button type="button" onclick="showSection('dashboard')" class="action-btn btn-secondary w-full">Dashboard</button>
+                                    <a href="{% url 'home_page' %}" class="action-btn btn-secondary w-full">Bosh sahifa</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- BOOKS -->
+                <section id="books-section" class="section-panel">
+                    <div class="glass rounded-3xl p-8 shadow-lg">
+                        <div class="flex flex-wrap items-start justify-between gap-4 mb-8">
+                            <div>
+                                <div class="mini-tag mb-3">📚 Kitoblar bo‘limi</div>
+                                <h3 class="text-3xl font-bold text-slate-800">Kitoblar boshqaruvi</h3>
+                                <p class="text-slate-500 mt-2">Kutubxona resurslarini ko‘rish, qo‘shish va boshqarish uchun kerakli havolalar.</p>
+                            </div>
+
+                            <button type="button"
+                                    onclick="showSection('dashboard')"
+                                    class="action-btn btn-secondary">
+                                ← Dashboardga qaytish
+                            </button>
+                        </div>
+
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div class="action-card">
+                                <div class="text-4xl mb-4">📋</div>
+                                <h4 class="text-xl font-bold text-slate-800 mb-2">Kitoblar ro‘yxati</h4>
+                                <p class="text-slate-500 leading-7 mb-5">Kutubxonadagi barcha kitoblarni ko‘rish va boshqarish.</p>
+                                <a href="{% url 'books_list' %}" class="action-btn btn-primary w-full">Ro‘yxatga o‘tish</a>
+                            </div>
+
+                            <div class="action-card">
+                                <div class="text-4xl mb-4">➕</div>
+                                <h4 class="text-xl font-bold text-slate-800 mb-2">Kitob qo‘shish</h4>
+                                <p class="text-slate-500 leading-7 mb-5">Yangi kitob, PDF va muqova qo‘shish sahifasi.</p>
+                                <a href="{% url 'book_add' %}" class="action-btn btn-dark w-full">Kitob qo‘shish</a>
+                            </div>
+
+                            <div class="action-card">
+                                <div class="text-4xl mb-4">🏠</div>
+                                <h4 class="text-xl font-bold text-slate-800 mb-2">Ortga qaytish</h4>
+                                <p class="text-slate-500 leading-7 mb-5">Dashboardga yoki bosh sahifaga qaytish.</p>
+                                <div class="flex flex-col gap-3">
+                                    <button type="button" onclick="showSection('dashboard')" class="action-btn btn-secondary w-full">Dashboard</button>
+                                    <a href="{% url 'home_page' %}" class="action-btn btn-secondary w-full">Bosh sahifa</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- STATS -->
+                <section id="stats-section" class="section-panel">
+                    <div class="glass rounded-3xl p-8 shadow-lg">
+                        <div class="flex flex-wrap items-start justify-between gap-4 mb-8">
+                            <div>
+                                <div class="mini-tag mb-3">📈 Statistika bo‘limi</div>
+                                <h3 class="text-3xl font-bold text-slate-800">Kutubxona statistikasi</h3>
+                                <p class="text-slate-500 mt-2">Asosiy sonlar va foydalanuvchilar nisbati.</p>
+                            </div>
+
+                            <button type="button"
+                                    onclick="showSection('dashboard')"
+                                    class="action-btn btn-secondary">
+                                ← Dashboardga qaytish
+                            </button>
+                        </div>
+
+                        <div class="grid md:grid-cols-4 gap-5 mb-8">
+                            <div class="bg-white rounded-2xl border border-slate-100 p-5">
+                                <p class="text-sm text-slate-500">Kitoblar</p>
+                                <p class="text-3xl font-extrabold text-slate-900 mt-3">{{ books_count|default:0 }}</p>
+                            </div>
+                            <div class="bg-white rounded-2xl border border-slate-100 p-5">
+                                <p class="text-sm text-slate-500">Talabalar</p>
+                                <p class="text-3xl font-extrabold text-slate-900 mt-3">{{ students_count|default:0 }}</p>
+                            </div>
+                            <div class="bg-white rounded-2xl border border-slate-100 p-5">
+                                <p class="text-sm text-slate-500">O‘qituvchilar</p>
+                                <p class="text-3xl font-extrabold text-slate-900 mt-3">{{ teachers_count|default:0 }}</p>
+                            </div>
+                            <div class="bg-white rounded-2xl border border-slate-100 p-5">
+                                <p class="text-sm text-slate-500">Jami foydalanuvchilar</p>
+                                <p class="text-3xl font-extrabold text-slate-900 mt-3">{{ students_count|add:teachers_count|default:0 }}</p>
+                            </div>
+                        </div>
+
+                        <div class="grid xl:grid-cols-2 gap-6">
+                            <div class="bg-white rounded-3xl p-6 border border-slate-100">
+                                <h4 class="font-bold text-slate-800 mb-4">Har oy qo‘shilgan kitoblar</h4>
+                                <canvas id="monthlyChartSecondary" height="110"></canvas>
+                            </div>
+                            <div class="bg-white rounded-3xl p-6 border border-slate-100">
+                                <h4 class="font-bold text-slate-800 mb-4">Foydalanuvchilar nisbati</h4>
+                                <canvas id="userRatioChartSecondary" height="180"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PROFILE -->
+                <section id="profile-section" class="section-panel">
+                    <div class="glass rounded-3xl p-8 shadow-lg">
+                        <div class="flex flex-wrap items-start justify-between gap-4 mb-8">
+                            <div>
+                                <div class="mini-tag mb-3">👤 Profil bo‘limi</div>
+                                <h3 class="text-3xl font-bold text-slate-800">Admin profili</h3>
+                                <p class="text-slate-500 mt-2">Profil ma’lumotlari, tahrirlash va parolni almashtirish sahifalari.</p>
+                            </div>
+
+                            <button type="button"
+                                    onclick="showSection('dashboard')"
+                                    class="action-btn btn-secondary">
+                                ← Dashboardga qaytish
+                            </button>
+                        </div>
+
+                        <div class="grid sm:grid-cols-2 gap-6">
+                            <div class="bg-white rounded-2xl p-5 border border-slate-100">
+                                <p class="text-sm text-slate-500 mb-2">Login</p>
+                                <p class="font-semibold text-slate-800">{{ request.user.username }}</p>
+                            </div>
+
+                            <div class="bg-white rounded-2xl p-5 border border-slate-100">
+                                <p class="text-sm text-slate-500 mb-2">Email</p>
+                                <p class="font-semibold text-slate-800">{{ request.user.email|default:"Kiritilmagan" }}</p>
+                            </div>
+
+                            <div class="bg-white rounded-2xl p-5 border border-slate-100">
+                                <p class="text-sm text-slate-500 mb-2">Ism</p>
+                                <p class="font-semibold text-slate-800">
+                                    {% if request.user.first_name or request.user.last_name %}
+                                        {{ request.user.first_name }} {{ request.user.last_name }}
+                                    {% else %}
+                                        Kiritilmagan
+                                    {% endif %}
+                                </p>
+                            </div>
+
+                            <div class="bg-white rounded-2xl p-5 border border-slate-100">
+                                <p class="text-sm text-slate-500 mb-2">Rol</p>
+                                <p class="font-semibold text-slate-800">
+                                    {% if request.user.is_superuser %}
+                                        Super Admin
+                                    {% else %}
+                                        Admin
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6">
+                            {% if profile %}
+                                <div class="flex flex-wrap gap-4">
+                                    <a href="{% url 'admin_profile' %}" class="action-btn btn-primary">
+                                        👁 Profilni ko‘rish
+                                    </a>
+                                    <a href="{% url 'admin_profile_edit' %}" class="action-btn btn-dark">
+                                        ✏️ Profilni tahrirlash
+                                    </a>
+                                    <a href="{% url 'admin_password_change' %}" class="action-btn btn-secondary">
+                                        🔐 Parolni almashtirish
+                                    </a>
+                                </div>
+                            {% else %}
+                                <div class="mt-2 bg-amber-50 border border-amber-200 rounded-2xl p-5 text-amber-800">
+                                    Admin profil ma’lumotlari topilmadi. Sizda oddiy `User` bor, lekin `AdminProfile` hali biriktirilmagan bo‘lishi mumkin.
+                                </div>
+
+                                <div class="mt-5 flex flex-wrap gap-4">
+                                    <a href="/admin/" class="action-btn btn-primary">
+                                        ⚙️ Django Admin
+                                    </a>
+                                    <a href="{% url 'home_page' %}" class="action-btn btn-secondary">
+                                        🏠 Bosh sahifa
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+</div>
+
+{{ students_count|default:0|json_script:"students-count-data" }}
+{{ teachers_count|default:0|json_script:"teachers-count-data" }}
+
+<script>
+    const sectionTitles = {
+        dashboard: {
+            title: "Dashboard",
+            subtitle: "Kutubxona boshqaruv paneli"
+        },
+        students: {
+            title: "Talabalar",
+            subtitle: "Talabalarni ko‘rish va boshqarish"
+        },
+        teachers: {
+            title: "O‘qituvchilar",
+            subtitle: "O‘qituvchilarni boshqarish bo‘limi"
+        },
+        books: {
+            title: "Kitoblar",
+            subtitle: "Kutubxona resurslarini boshqarish"
+        },
+        categories: {
+            title: "Kategoriyalar",
+            subtitle: "Bo‘lim va kategoriyalar bilan ishlash"
+        },
+        stats: {
+            title: "Statistika",
+            subtitle: "Tizim bo‘yicha umumiy hisobot"
+        },
+        profile: {
+            title: "Profil",
+            subtitle: "Admin akkaunt ma’lumotlari"
+        }
+    };
+
+    function showSection(sectionName) {
+        document.querySelectorAll('.section-panel').forEach(section => {
+            section.classList.remove('active');
+        });
+
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.classList.remove('active');
+        });
+
+        const currentSection = document.getElementById(sectionName + '-section');
+        const currentButton = document.querySelector(`.sidebar-link[data-section="${sectionName}"]`);
+        const pageTitle = document.getElementById('page-title');
+        const pageSubtitle = document.getElementById('page-subtitle');
+
+        if (currentSection) {
+            currentSection.classList.add('active');
+        }
+
+        if (currentButton) {
+            currentButton.classList.add('active');
+        }
+
+        if (pageTitle && sectionTitles[sectionName]) {
+            pageTitle.textContent = sectionTitles[sectionName].title;
+        }
+
+        if (pageSubtitle && sectionTitles[sectionName]) {
+            pageSubtitle.textContent = sectionTitles[sectionName].subtitle;
+        }
+    }
+
+    function buildCharts() {
+        const monthlyChartElement = document.getElementById('monthlyChart');
+        if (monthlyChartElement) {
+            new Chart(monthlyChartElement, {
+                type: 'bar',
+                data: {
+                    labels: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyun'],
+                    datasets: [{
+                        label: 'Qo‘shilgan kitoblar',
+                        data: [12, 18, 10, 15, 22, 16],
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 12,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#e2e8f0' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        const userRatioChartElement = document.getElementById('userRatioChart');
+        const studentsCount = JSON.parse(document.getElementById('students-count-data').textContent || '0');
+        const teachersCount = JSON.parse(document.getElementById('teachers-count-data').textContent || '0');
+        const adminCount = 1;
+
+        if (userRatioChartElement) {
+            new Chart(userRatioChartElement, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Talabalar', 'O‘qituvchilar', 'Adminlar'],
+                    datasets: [{
+                        data: [studentsCount, teachersCount, adminCount],
+                        backgroundColor: ['#1e3a8a', '#3b82f6', '#93c5fd'],
+                        borderWidth: 4,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    cutout: '68%',
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        const monthlyChartSecondary = document.getElementById('monthlyChartSecondary');
+        if (monthlyChartSecondary) {
+            new Chart(monthlyChartSecondary, {
+                type: 'line',
+                data: {
+                    labels: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyun'],
+                    datasets: [{
+                        label: 'Qo‘shilgan kitoblar',
+                        data: [12, 18, 10, 15, 22, 16],
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37,99,235,0.12)',
+                        fill: true,
+                        tension: 0.35
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        const userRatioChartSecondary = document.getElementById('userRatioChartSecondary');
+        if (userRatioChartSecondary) {
+            new Chart(userRatioChartSecondary, {
+                type: 'pie',
+                data: {
+                    labels: ['Talabalar', 'O‘qituvchilar', 'Adminlar'],
+                    datasets: [{
+                        data: [studentsCount, teachersCount, adminCount],
+                        backgroundColor: ['#1e3a8a', '#3b82f6', '#93c5fd'],
+                        borderColor: '#ffffff',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.sidebar-link').forEach(button => {
+            button.addEventListener('click', function () {
+                const sectionName = this.getAttribute('data-section');
+                showSection(sectionName);
+            });
+        });
+
+        showSection('dashboard');
+        buildCharts();
+    });
+</script>
+{% endblock %}

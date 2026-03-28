@@ -1,0 +1,332 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    body {
+        font-family: 'Inter', system-ui, sans-serif;
+        background: linear-gradient(to bottom right, #f8fafc, #e0f2fe);
+    }
+
+    #header {
+        background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    #branding h1 a {
+        color: white !important;
+        font-weight: 700;
+        font-size: 26px;
+    }
+
+    #content {
+        padding: 40px 50px;
+        max-width: 1480px;
+        margin: 0 auto;
+    }
+
+    /* Welcome Banner */
+    .welcome-banner {
+        background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+        color: white;
+        border-radius: 28px;
+        padding: 48px 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 48px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-banner::after {
+        content: '📚';
+        position: absolute;
+        right: 40px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 180px;
+        opacity: 0.12;
+    }
+
+    .welcome-text h1 {
+        font-size: 42px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+        margin-bottom: 50px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 24px;
+        padding: 32px 28px;
+        box-shadow: 0 20px 45px rgba(30, 58, 138, 0.12);
+        transition: all 0.4s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-12px);
+    }
+
+    .stat-number {
+        font-size: 54px;
+        font-weight: 800;
+        color: #1e3a8a;
+        line-height: 1;
+    }
+
+    .stat-label {
+        color: #64748b;
+        font-size: 15.5px;
+        margin-top: 10px;
+        font-weight: 500;
+    }
+
+    /* Quick Actions */
+    .quick-section {
+        background: white;
+        border-radius: 28px;
+        padding: 40px;
+        box-shadow: 0 20px 45px rgba(30, 58, 138, 0.12);
+        margin-bottom: 50px;
+    }
+
+    .quick-section h2 {
+        color: #1e3a8a;
+        margin-bottom: 28px;
+        font-size: 22px;
+    }
+
+    .quick-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 18px;
+    }
+
+    .quick-links a {
+        padding: 22px 24px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        text-decoration: none;
+        color: #1e3a8a;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .quick-links a:hover {
+        background: #1e3a8a;
+        color: white;
+        transform: translateY(-6px);
+    }
+
+    /* Panels */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+    }
+
+    .dashboard-panel {
+        background: white;
+        border-radius: 28px;
+        padding: 36px;
+        box-shadow: 0 20px 45px rgba(30, 58, 138, 0.12);
+    }
+
+    .dashboard-panel h2 {
+        color: #1e3a8a;
+        margin-bottom: 24px;
+        font-size: 21px;
+    }
+
+    .mini-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .mini-list li {
+        padding: 16px 0;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 15.5px;
+    }
+
+    .mini-list li:last-child {
+        border-bottom: none;
+    }
+
+    .muted {
+        color: #64748b;
+        font-size: 14.5px;
+    }
+
+    .chart-box {
+        height: 380px;
+        margin-top: 20px;
+    }
+
+    @media (max-width: 1100px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div id="content">
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div class="welcome-text">
+            <p class="text-blue-100 text-lg">Assalomu alaykum, Super Admin</p>
+            <h1>Tpulib Admin Paneli</h1>
+            <p class="mt-4 text-blue-100 max-w-md">Tizimni boshqaring, yangi ma'lumotlar qo'shing va statistikani kuzatib boring.</p>
+        </div>
+        <div class="text-[160px] opacity-20">📊</div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Jami kitoblar</h3>
+            <div class="stat-number">{{ total_books|default:0 }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Jami talabalar</h3>
+            <div class="stat-number">{{ total_students|default:0 }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Jami o‘qituvchilar</h3>
+            <div class="stat-number">{{ total_teachers|default:0 }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Jami oddiy adminlar</h3>
+            <div class="stat-number">{{ total_admins|default:0 }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Jami bo‘limlar</h3>
+            <div class="stat-number">{{ total_categories|default:0 }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Jami foydalanuvchilar</h3>
+            <div class="stat-number">{{ total_users|default:0 }}</div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-section">
+        <h2>Tezkor bo‘limlar</h2>
+        <div class="quick-links">
+            <a href="/admin/library/student/">👨‍🎓 Talabalar</a>
+            <a href="/admin/library/teacher/">👩‍🏫 O‘qituvchilar</a>
+            <a href="/admin/library/adminprofile/">👤 Oddiy adminlar</a>
+            <a href="/admin/library/book/">📚 Kitoblar</a>
+            <a href="/admin/library/category/">📂 Bo‘limlar</a>
+            <a href="/admin/auth/user/">🔑 Foydalanuvchilar</a>
+            <a href="/admin/library/student/add/">➕ Talaba qo‘shish</a>
+            <a href="/admin/library/teacher/add/">➕ O‘qituvchi qo‘shish</a>
+        </div>
+    </div>
+
+    <!-- Charts & Recent -->
+    <div class="dashboard-grid">
+        <!-- Chart -->
+        <div class="dashboard-panel">
+            <h2>Bo‘limlar bo‘yicha kitoblar statistikasi</h2>
+            <div class="chart-box">
+                <canvas id="booksChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Latest Books -->
+        <div class="dashboard-panel">
+            <h2>Oxirgi yuklangan kitoblar</h2>
+            <ul class="mini-list">
+                {% for book in latest_books %}
+                <li>
+                    <strong>{{ book.title }}</strong><br>
+                    <span class="muted">
+                        {{ book.author }}
+                        {% if book.category %} • {{ book.category.name }}{% endif %}
+                    </span>
+                </li>
+                {% empty %}
+                <li class="muted">Hozircha kitoblar yo‘q</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Recent Students & Teachers -->
+    <div class="dashboard-grid">
+        <div class="dashboard-panel">
+            <h2>Oxirgi qo‘shilgan talabalar</h2>
+            <ul class="mini-list">
+                {% for student in latest_students %}
+                <li>
+                    <strong>{{ student.last_name }} {{ student.first_name }}</strong><br>
+                    <span class="muted">Guruh: {{ student.group }} | Kurs: {{ student.course }}</span>
+                </li>
+                {% empty %}
+                <li class="muted">Talabalar mavjud emas</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="dashboard-panel">
+            <h2>Oxirgi qo‘shilgan o‘qituvchilar</h2>
+            <ul class="mini-list">
+                {% for teacher in latest_teachers %}
+                <li>
+                    <strong>{{ teacher.last_name }} {{ teacher.first_name }}</strong><br>
+                    <span class="muted">Kafedra: {{ teacher.department }}</span>
+                </li>
+                {% empty %}
+                <li class="muted">O‘qituvchilar mavjud emas</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    const ctx = document.getElementById('booksChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ chart_labels|safe }},
+                datasets: [{
+                    label: 'Kitoblar soni',
+                    data: {{ chart_data|safe }},
+                    backgroundColor: '#3b82f6',
+                    borderColor: '#1e3a8a',
+                    borderWidth: 2,
+                    borderRadius: 10
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { precision: 0 } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+</script>
+
+{{ block.super }}
+{% endblock %}

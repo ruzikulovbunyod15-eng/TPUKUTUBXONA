@@ -1,0 +1,281 @@
+{% extends "library/base.html" %}
+
+{% block title %}Kitobni tahrirlash{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-sky-50">
+    <div class="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 py-10">
+
+        <!-- Header -->
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#1554d1] mb-2">
+                    Admin panel
+                </p>
+                <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-900">
+                    Kitobni tahrirlash
+                </h1>
+                <p class="text-slate-500 mt-2">
+                    Kitob ma’lumotlarini yangilang
+                </p>
+            </div>
+
+            <div>
+                <a href="{% url 'books_list' %}"
+                   class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl border border-slate-300 bg-white text-slate-700 font-semibold hover:bg-slate-50 transition">
+                    <span>←</span>
+                    <span>Ro‘yxatga qaytish</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Book info -->
+        <div class="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-[24px] p-5">
+            <div class="flex flex-col md:flex-row md:items-start gap-5">
+                <div class="shrink-0">
+                    {% if book.cover %}
+                        <img src="{{ book.cover.url }}"
+                             alt="{{ book.title }}"
+                             class="w-28 h-40 object-cover rounded-2xl border border-slate-200 shadow-sm">
+                    {% else %}
+                        <div class="w-28 h-40 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-4xl border border-blue-200">
+                            📘
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="flex-1">
+                    <h3 class="font-bold text-slate-800 text-lg mb-1">Tahrirlanayotgan kitob</h3>
+                    <p class="text-slate-700 font-medium text-xl">
+                        {{ book.title }}
+                    </p>
+                    <p class="text-slate-500 text-sm mt-1">
+                        {{ book.author }}{% if book.category %} • {{ book.category.name }}{% endif %}
+                    </p>
+
+                    <div class="mt-4 flex flex-wrap gap-3">
+                        {% if book.pdf_file %}
+                            <a href="{{ book.pdf_file.url }}"
+                               target="_blank"
+                               class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-blue-600 font-medium hover:bg-slate-50 transition">
+                                <span>📄</span>
+                                <span>Joriy PDF</span>
+                            </a>
+                        {% endif %}
+
+                        {% if book.cover %}
+                            <a href="{{ book.cover.url }}"
+                               target="_blank"
+                               class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-purple-600 font-medium hover:bg-slate-50 transition">
+                                <span>🖼️</span>
+                                <span>Joriy muqova</span>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm overflow-hidden">
+            <div class="px-8 py-6 border-b border-slate-100 bg-slate-50/70">
+                <h2 class="text-xl font-bold text-slate-800">Kitob ma’lumotlari</h2>
+                <p class="text-slate-500 text-sm mt-1">
+                    Quyidagi maydonlarni yangilang
+                </p>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="p-8">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-red-700">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if form.errors %}
+                    <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-red-700">
+                        <p class="font-semibold mb-2">Iltimos, xatolarni to‘g‘rilang:</p>
+                        <div class="text-sm leading-6">
+                            {{ form.errors }}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="{{ form.title.id_for_label }}" class="block text-sm font-semibold text-slate-700 mb-2">
+                            Kitob nomi <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="mt-2 text-sm text-red-600">{{ form.title.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.author.id_for_label }}" class="block text-sm font-semibold text-slate-700 mb-2">
+                            Muallif <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.author }}
+                        {% if form.author.errors %}
+                            <div class="mt-2 text-sm text-red-600">{{ form.author.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.category.id_for_label }}" class="block text-sm font-semibold text-slate-700 mb-2">
+                            Bo‘lim
+                        </label>
+                        {{ form.category }}
+                        {% if form.category.errors %}
+                            <div class="mt-2 text-sm text-red-600">{{ form.category.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.keywords.id_for_label }}" class="block text-sm font-semibold text-slate-700 mb-2">
+                            Kalit so‘zlar
+                        </label>
+                        {{ form.keywords }}
+                        {% if form.keywords.errors %}
+                            <div class="mt-2 text-sm text-red-600">{{ form.keywords.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label for="{{ form.description.id_for_label }}" class="block text-sm font-semibold text-slate-700 mb-2">
+                            Tavsif
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="mt-2 text-sm text-red-600">{{ form.description.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label for="{{ form.pdf_file.id_for_label }}" class="block text-sm font-semibold text-slate-700 mb-2">
+                            Yangi PDF fayl
+                        </label>
+
+                        <div class="rounded-2xl border border-dashed border-blue-200 bg-blue-50/50 p-5">
+                            {{ form.pdf_file }}
+
+                            {% if book.pdf_file %}
+                                <div class="mt-4 flex flex-wrap items-center gap-3">
+                                    <span class="text-sm text-slate-600">Joriy fayl:</span>
+                                    <a href="{{ book.pdf_file.url }}"
+                                       target="_blank"
+                                       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-blue-600 font-medium hover:bg-slate-50 transition">
+                                        <span>📄</span>
+                                        <span>Ko‘rish</span>
+                                    </a>
+                                </div>
+                            {% endif %}
+
+                            <p class="mt-3 text-sm text-slate-500">
+                                Yangi PDF yuklasangiz, avvalgi fayl yangilanadi. Agar muqova yuklanmagan bo‘lsa, yangi PDF asosida muqova ham avtomatik yangilanishi mumkin.
+                            </p>
+                        </div>
+
+                        {% if form.pdf_file.errors %}
+                            <div class="mt-2 text-sm text-red-600">{{ form.pdf_file.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label for="{{ form.cover.id_for_label }}" class="block text-sm font-semibold text-slate-700 mb-2">
+                            Yangi muqova rasmi
+                        </label>
+
+                        <div class="rounded-2xl border border-dashed border-purple-200 bg-purple-50/50 p-5">
+                            {{ form.cover }}
+
+                            {% if book.cover %}
+                                <div class="mt-4 flex flex-col sm:flex-row sm:items-center gap-4">
+                                    <div class="shrink-0">
+                                        <img src="{{ book.cover.url }}"
+                                             alt="{{ book.title }}"
+                                             class="w-24 h-32 object-cover rounded-xl border border-slate-200 shadow-sm">
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-slate-700">Joriy muqova</p>
+                                        <a href="{{ book.cover.url }}"
+                                           target="_blank"
+                                           class="mt-2 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-purple-600 font-medium hover:bg-slate-50 transition">
+                                            <span>🖼️</span>
+                                            <span>Ko‘rish</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <p class="mt-3 text-sm text-slate-500">
+                                Yangi muqova yuklasangiz, avvalgi muqova yangilanadi. Muqova yuklanmasa, tizim mavjud muqovani saqlab qoladi yoki kerak bo‘lsa PDF dan avtomatik yaratadi.
+                            </p>
+                        </div>
+
+                        {% if form.cover.errors %}
+                            <div class="mt-2 text-sm text-red-600">{{ form.cover.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="pt-8 flex flex-col sm:flex-row gap-4">
+                    <button
+                        type="submit"
+                        class="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl bg-[#1554d1] text-white font-semibold shadow-lg shadow-blue-200 hover:bg-[#0f45b0] transition"
+                    >
+                        <span>💾</span>
+                        <span>Yangilash</span>
+                    </button>
+
+                    <a
+                        href="{% url 'books_list' %}"
+                        class="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl border border-slate-300 bg-white text-slate-700 font-semibold hover:bg-slate-50 transition"
+                    >
+                        <span>↩</span>
+                        <span>Ortga</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    input, select, textarea {
+        width: 100%;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        padding: 14px 16px;
+        color: #0f172a;
+        outline: none;
+        transition: 0.2s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+        background: #ffffff;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+
+    input[type="file"] {
+        border: none;
+        background: transparent;
+        padding: 0;
+        box-shadow: none;
+    }
+
+    ul.errorlist {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+</style>
+{% endblock %}

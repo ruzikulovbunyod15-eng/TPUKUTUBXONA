@@ -1,0 +1,335 @@
+{% extends "library/base.html" %}
+
+{% block title %}Tpulib - Raqamli Kutubxona{% endblock %}
+
+{% block content %}
+<div class="relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-sky-50 min-h-screen">
+
+    <!-- Background Decorative Shapes -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden">
+        <div class="absolute -top-24 -left-24 w-80 h-80 bg-blue-100 rounded-full opacity-70 blur-3xl"></div>
+        <div class="absolute top-20 left-1/4 w-72 h-72 bg-indigo-100 rounded-full opacity-60 blur-3xl"></div>
+        <div class="absolute -bottom-24 -right-16 w-96 h-96 bg-sky-100 rounded-full opacity-70 blur-3xl"></div>
+        <div class="absolute bottom-10 left-10 w-40 h-40 bg-blue-50 rounded-full opacity-80 blur-2xl"></div>
+        <div class="absolute top-1/2 right-1/4 w-52 h-52 bg-cyan-100 rounded-full opacity-50 blur-3xl"></div>
+    </div>
+
+    <!-- HERO -->
+    <section class="relative z-10 pt-14 pb-14 lg:pt-16 lg:pb-16">
+        <div class="max-w-screen-2xl mx-auto px-6 sm:px-8 lg:px-12 xl:px-16">
+
+            <div class="bg-white rounded-[40px] shadow-[0_30px_80px_rgba(37,99,235,0.10)] border border-blue-100/80 overflow-hidden relative">
+                <div class="absolute inset-0 pointer-events-none">
+                    <div class="absolute top-0 left-0 w-56 h-24 bg-blue-50 clip-path-slant hidden lg:block"></div>
+                    <div class="absolute bottom-0 right-0 w-72 h-32 bg-sky-50 clip-path-slant-reverse hidden lg:block"></div>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-10 items-center px-8 sm:px-10 lg:px-16 py-14 lg:py-20">
+
+                    <!-- LEFT -->
+                    <div class="max-w-2xl">
+                        <div class="inline-flex items-center gap-3 px-5 py-3 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-sm font-bold mb-6">
+                            <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                            Tashkent Perfect University Digital Library
+                        </div>
+
+                        <h1 class="text-[40px] sm:text-[54px] lg:text-[68px] leading-[0.95] font-extrabold tracking-tight text-slate-900">
+                            Tashkent<br>
+                            <span class="text-[#1554d1]">Perfect University</span>
+                        </h1>
+
+                        <p class="mt-6 text-slate-600 text-base sm:text-lg leading-8 max-w-xl">
+                            Tashkent Perfect University raqamli kutubxonasi — talabalar, o‘qituvchilar va
+                            kutubxonachilar uchun mo‘ljallangan zamonaviy elektron platforma. Bu yerda
+                            kitoblarni online o‘qish, yangi resurslarni topish, ilmiy manbalardan foydalanish
+                            va o‘quv jarayonini qulay boshqarish mumkin.
+                        </p>
+
+                        <div class="mt-8 flex flex-wrap gap-4">
+                            <a href="{% url 'public_library' %}"
+                               class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#1554d1] text-white font-semibold shadow-lg shadow-blue-200 hover:bg-[#0f45b0] transition">
+                                <span>📚</span>
+                                <span>Kutubxonaga o‘tish</span>
+                            </a>
+
+                            {% if request.user.is_authenticated %}
+                                {% if request.user.is_superuser or request.user.is_staff %}
+                                    <a href="{% url 'admin_panel' %}"
+                                       class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border-2 border-[#1554d1] text-[#1554d1] font-semibold hover:bg-blue-50 transition">
+                                        <span>🛡️</span>
+                                        <span>Admin panel</span>
+                                    </a>
+                                {% elif request.user.teacher_profile %}
+                                    <a href="{% url 'teacher_panel' %}"
+                                       class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border-2 border-[#1554d1] text-[#1554d1] font-semibold hover:bg-blue-50 transition">
+                                        <span>👨‍🏫</span>
+                                        <span>Ustoz kabineti</span>
+                                    </a>
+                                {% elif request.user.student_profile %}
+                                    <a href="{% url 'student_panel' %}"
+                                       class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border-2 border-[#1554d1] text-[#1554d1] font-semibold hover:bg-blue-50 transition">
+                                        <span>🎓</span>
+                                        <span>Talaba kabineti</span>
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'login' %}"
+                                       class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border-2 border-[#1554d1] text-[#1554d1] font-semibold hover:bg-blue-50 transition">
+                                        <span>🔐</span>
+                                        <span>Tizimga kirish</span>
+                                    </a>
+                                {% endif %}
+                            {% else %}
+                                <a href="{% url 'login' %}"
+                                   class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border-2 border-[#1554d1] text-[#1554d1] font-semibold hover:bg-blue-50 transition">
+                                    <span>🔐</span>
+                                    <span>Tizimga kirish</span>
+                                </a>
+                            {% endif %}
+                        </div>
+
+                        <!-- Mini info -->
+                        <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
+                            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+                                <p class="text-sm text-slate-500 mb-2">Asosiy imkoniyat</p>
+                                <h3 class="text-lg font-bold text-slate-900">Faqat online o‘qish</h3>
+                                <p class="text-sm text-slate-500 mt-2">Kitoblar platforma ichida ko‘riladi</p>
+                            </div>
+
+                            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+                                <p class="text-sm text-slate-500 mb-2">Tizim turi</p>
+                                <h3 class="text-lg font-bold text-slate-900">Professional kutubxona</h3>
+                                <p class="text-sm text-slate-500 mt-2">Talaba, ustoz va admin uchun</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT -->
+                    <div class="relative">
+                        <div class="relative mx-auto max-w-2xl">
+
+                            <!-- Main visual card -->
+                            <div class="relative bg-white rounded-[32px] p-5 shadow-[0_24px_60px_rgba(59,130,246,0.18)] border border-blue-100">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="rounded-[24px] overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100 h-[220px] sm:h-[260px]">
+                                        <img
+                                            src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=1200&auto=format&fit=crop"
+                                            alt="Library"
+                                            class="w-full h-full object-cover"
+                                            onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=&quot;w-full h-full flex items-center justify-center text-6xl text-blue-700&quot;>📚</div>';"
+                                        >
+                                    </div>
+
+                                    <div class="flex flex-col gap-4">
+                                        <div class="bg-blue-50 border border-blue-100 rounded-[22px] p-5 flex-1">
+                                            <div class="text-4xl mb-3">📘</div>
+                                            <h3 class="text-lg font-bold text-slate-900">Elektron kitoblar</h3>
+                                            <p class="text-sm text-slate-500 mt-2 leading-6">
+                                                O‘quv va ilmiy adabiyotlar markazlashgan tizimda saqlanadi.
+                                            </p>
+                                        </div>
+
+                                        <div class="bg-indigo-50 border border-indigo-100 rounded-[22px] p-5 flex-1">
+                                            <div class="text-4xl mb-3">💻</div>
+                                            <h3 class="text-lg font-bold text-slate-900">Online foydalanish</h3>
+                                            <p class="text-sm text-slate-500 mt-2 leading-6">
+                                                Tizim ichida qulay o‘qish, qidirish va boshqarish imkoniyati mavjud.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Floating cards -->
+                            <div class="absolute -top-5 -right-2 sm:right-0 bg-white rounded-[22px] px-5 py-4 shadow-xl border border-slate-100 flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-[#1554d1] flex items-center justify-center text-2xl">
+                                    📚
+                                </div>
+                                <div>
+                                    <p class="text-slate-900 font-bold leading-tight">{{ total_books }} ta kitob</p>
+                                    <p class="text-slate-500 text-sm">Kutubxonada mavjud</p>
+                                </div>
+                            </div>
+
+                            <div class="absolute -bottom-5 left-4 bg-white rounded-[20px] px-4 py-3 shadow-lg border border-slate-100 hidden sm:flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-lg">
+                                    ✅
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-900">{{ total_resources }} ta resurs</p>
+                                    <p class="text-xs text-slate-500">Elektron formatda tayyor</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STATS -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
+                <div class="bg-white rounded-[24px] p-6 shadow-sm border border-blue-100">
+                    <p class="text-4xl font-extrabold text-[#0f3ea8]">{{ total_books }}</p>
+                    <p class="mt-2 text-slate-600 font-medium">Jami kitoblar</p>
+                </div>
+
+                <div class="bg-white rounded-[24px] p-6 shadow-sm border border-blue-100">
+                    <p class="text-4xl font-extrabold text-[#0f3ea8]">{{ total_resources }}</p>
+                    <p class="mt-2 text-slate-600 font-medium">Jami resurslar</p>
+                </div>
+
+                <div class="bg-white rounded-[24px] p-6 shadow-sm border border-blue-100">
+                    <p class="text-4xl font-extrabold text-[#0f3ea8]">{{ total_students }}</p>
+                    <p class="mt-2 text-slate-600 font-medium">Talabalar</p>
+                </div>
+
+                <div class="bg-white rounded-[24px] p-6 shadow-sm border border-blue-100">
+                    <p class="text-4xl font-extrabold text-[#0f3ea8]">{{ total_teachers }}</p>
+                    <p class="mt-2 text-slate-600 font-medium">O‘qituvchilar</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURE BLOCKS -->
+    <section class="relative z-10 pb-10">
+        <div class="max-w-screen-2xl mx-auto px-6 sm:px-8 lg:px-12 xl:px-16">
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center text-2xl mb-4">
+                        🔍
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Qidiruv va filter</h3>
+                    <p class="text-slate-500 leading-7">
+                        Kitoblarni nomi, muallifi, bo‘limi va kalit so‘zlari bo‘yicha tez topish mumkin.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                    <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center text-2xl mb-4">
+                        👨‍🏫
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Ustozlar uchun</h3>
+                    <p class="text-slate-500 leading-7">
+                        O‘qituvchilar o‘z kitoblarini yuklab, tahrirlab va kutubxona tarkibini boyitishi mumkin.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-2xl mb-4">
+                        🎓
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Talabalar uchun</h3>
+                    <p class="text-slate-500 leading-7">
+                        Talabalar kitoblarni online o‘qiydi, sevimlilarga qo‘shadi va o‘z kabinetidan foydalanadi.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LATEST BOOKS -->
+    <section class="relative z-10 pb-24">
+        <div class="max-w-screen-2xl mx-auto px-6 sm:px-8 lg:px-12 xl:px-16">
+
+            <div class="flex items-center justify-between flex-wrap gap-4 mb-10">
+                <div>
+                    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#1554d1]">
+                        So‘nggi resurslar
+                    </p>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-2">
+                        Yangi qo‘shilgan kitoblar
+                    </h2>
+                </div>
+
+                <a href="{% url 'public_library' %}"
+                   class="inline-flex items-center px-6 py-3 rounded-full bg-white border border-blue-100 text-[#1554d1] font-semibold shadow-sm hover:bg-blue-50 transition">
+                    Barcha kitoblar →
+                </a>
+            </div>
+
+            {% if latest_books %}
+            <div class="grid gap-8 [grid-template-columns:repeat(auto-fit,minmax(240px,1fr))]">
+                {% for book in latest_books %}
+                <div class="bg-white rounded-[28px] overflow-hidden border border-blue-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+                    <div class="h-72 bg-gradient-to-br from-blue-50 via-sky-50 to-indigo-100 relative flex items-center justify-center overflow-hidden">
+                        {% if book.cover %}
+                            <img src="{{ book.cover.url }}"
+                                 alt="{{ book.title }}"
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        {% else %}
+                            <div class="w-44 h-60 bg-gradient-to-br from-blue-700 to-indigo-700 rounded-2xl flex flex-col items-center justify-center text-white shadow-inner">
+                                <span class="text-7xl mb-3">📖</span>
+                                <p class="text-center text-xs px-4 font-medium line-clamp-2">{{ book.title }}</p>
+                            </div>
+                        {% endif %}
+
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent"></div>
+
+                        {% if book.category %}
+                        <div class="absolute top-4 left-4">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-white/90 text-blue-700 text-xs font-semibold shadow">
+                                {{ book.category.name }}
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        <div class="absolute top-4 right-4">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-500 text-white text-xs font-semibold shadow">
+                                Yangi
+                            </span>
+                        </div>
+
+                        <div class="absolute bottom-4 left-4 text-2xl text-white">
+                            📘
+                        </div>
+                    </div>
+
+                    <div class="p-5">
+                        <h3 class="font-bold text-lg text-slate-900 line-clamp-2 mb-2">
+                            {{ book.title }}
+                        </h3>
+                        <p class="text-slate-500 text-sm mb-2">
+                            {{ book.author }}
+                        </p>
+
+                        {% if book.description %}
+                            <p class="text-slate-500 text-sm line-clamp-2 mb-5">
+                                {{ book.description }}
+                            </p>
+                        {% else %}
+                            <p class="text-slate-400 text-sm mb-5">
+                                Qisqacha tavsif mavjud emas.
+                            </p>
+                        {% endif %}
+
+                        <a href="{% url 'book_read' book.id %}"
+                           class="group/btn relative inline-flex items-center justify-center w-full py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold text-sm overflow-hidden shadow-lg hover:shadow-blue-200 transition-all duration-300">
+                            <span class="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition"></span>
+                            <span class="relative flex items-center gap-2">
+                                📖 O‘qish
+                                <span class="group-hover/btn:translate-x-1 transition">→</span>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="bg-white rounded-[28px] border border-blue-100 p-10 text-center text-slate-500 shadow-sm">
+                <p class="text-6xl mb-4">📚</p>
+                <p class="text-xl">Hozircha yangi kitoblar mavjud emas.</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+
+<style>
+    .clip-path-slant {
+        clip-path: polygon(0 0, 100% 0, 72% 100%, 0 100%);
+    }
+
+    .clip-path-slant-reverse {
+        clip-path: polygon(28% 0, 100% 0, 100% 100%, 0 100%);
+    }
+</style>
+{% endblock %}

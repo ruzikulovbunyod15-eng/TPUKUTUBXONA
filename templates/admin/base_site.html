@@ -1,0 +1,256 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Tpulib Super Admin{% endblock %}
+
+{% block extrastyle %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    :root {
+        --primary: #1e3a8a;
+        --accent: #3b82f6;
+    }
+
+    body {
+        font-family: 'Inter', system-ui, sans-serif;
+        background: linear-gradient(to bottom right, #f8fafc, #e0f2fe);
+    }
+
+    #header {
+        background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    #branding h1 a {
+        color: white !important;
+        font-weight: 700;
+        font-size: 26px;
+    }
+
+    #content {
+        padding: 40px;
+        max-width: 1480px;
+        margin: 0 auto;
+    }
+
+    /* Welcome Banner */
+    .welcome-banner {
+        background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+        color: white;
+        border-radius: 28px;
+        padding: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-banner::before {
+        content: '';
+        position: absolute;
+        right: 40px;
+        top: 20px;
+        font-size: 180px;
+        opacity: 0.15;
+    }
+
+    .welcome-text h1 {
+        font-size: 42px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+        margin-bottom: 50px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 24px;
+        padding: 32px 28px;
+        box-shadow: 0 20px 40px rgba(30, 58, 138, 0.12);
+        transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-10px);
+    }
+
+    .stat-number {
+        font-size: 52px;
+        font-weight: 800;
+        color: #1e3a8a;
+    }
+
+    .stat-label {
+        color: #64748b;
+        font-size: 15px;
+        margin-top: 8px;
+    }
+
+    /* Charts & Panels */
+    .main-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 28px;
+    }
+
+    .panel {
+        background: white;
+        border-radius: 28px;
+        padding: 32px;
+        box-shadow: 0 20px 40px rgba(30, 58, 138, 0.12);
+    }
+
+    .panel h2 {
+        font-size: 22px;
+        color: #1e3a8a;
+        margin-bottom: 24px;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+    }
+
+    .quick-actions a {
+        padding: 20px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        text-decoration: none;
+        color: #1e3a8a;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.3s;
+    }
+
+    .quick-actions a:hover {
+        background: #1e3a8a;
+        color: white;
+        transform: scale(1.03);
+    }
+</style>
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">Tpulib</a>
+</h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block content %}
+<div id="content">
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div class="welcome-text">
+            <p class="text-blue-100 text-lg">Assalomu alaykum, Super Admin!</p>
+            <h1>Welcome to Tpulib</h1>
+            <p class="mt-3 text-blue-100">Bugun tizimni boshqarish va yangi ma'lumotlar qo'shish vaqti keldi.</p>
+        </div>
+        <div class="text-[180px] opacity-20">📚</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_books|default:0 }}</div>
+            <div class="stat-label">Jami Kitoblar</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_students|default:0 }}</div>
+            <div class="stat-label">Jami Talabalar</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_teachers|default:0 }}</div>
+            <div class="stat-label">Jami O‘qituvchilar</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_users|default:0 }}</div>
+            <div class="stat-label">Jami Foydalanuvchilar</div>
+        </div>
+    </div>
+
+    <div class="main-grid">
+        <!-- Left Column -->
+        <div class="space-y-8">
+
+            <!-- Quick Actions -->
+            <div class="panel">
+                <h2>Tezkor Harakatlar</h2>
+                <div class="quick-actions">
+                    <a href="{% url 'students_list' %}">👨‍🎓 Talabalar bo‘limi</a>
+                    <a href="{% url 'teachers_list' %}">👩‍🏫 O‘qituvchilar</a>
+                    <a href="{% url 'books_list' %}">📚 Kitoblar</a>
+                    <a href="{% url 'student_add' %}">➕ Talaba qo‘shish</a>
+                    <a href="{% url 'teacher_add' %}">➕ O‘qituvchi qo‘shish</a>
+                    <a href="{% url 'book_add' %}">➕ Kitob qo‘shish</a>
+                </div>
+            </div>
+
+            <!-- Recent Books -->
+            <div class="panel">
+                <h2>Oxirgi qo‘shilgan kitoblar</h2>
+                <ul class="space-y-4">
+                    {% for book in latest_books %}
+                    <li class="flex justify-between items-center border-b pb-4 last:border-0">
+                        <div>
+                            <p class="font-semibold">{{ book.title }}</p>
+                            <p class="text-sm text-slate-500">{{ book.author }}</p>
+                        </div>
+                        <span class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+                            {{ book.category.name|default:"Umumiy" }}
+                        </span>
+                    </li>
+                    {% empty %}
+                    <li class="text-slate-500">Hozircha kitoblar yo‘q</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="space-y-8">
+
+            <!-- Recent Students -->
+            <div class="panel">
+                <h2>Oxirgi talabalar</h2>
+                <ul class="space-y-4">
+                    {% for student in latest_students %}
+                    <li class="flex justify-between">
+                        <div>
+                            <p class="font-medium">{{ student.last_name }} {{ student.first_name }}</p>
+                            <p class="text-sm text-slate-500">{{ student.group }}</p>
+                        </div>
+                        <span class="text-xs text-emerald-600">{{ student.course }}-kurs</span>
+                    </li>
+                    {% empty %}
+                    <li class="text-slate-500">Hozircha talabalar yo‘q</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Simple Chart Placeholder -->
+            <div class="panel">
+                <h2>Oylik faollik</h2>
+                <div class="h-64 flex items-center justify-center text-slate-400 border border-dashed rounded-2xl">
+                    (Bu yerga Line Chart qo‘shiladi – keyingi bosqichda)
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

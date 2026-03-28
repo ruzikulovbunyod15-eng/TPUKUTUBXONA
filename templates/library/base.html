@@ -1,0 +1,489 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tpulib - Raqamli Kutubxona{% endblock %}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .nav-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            font-weight: 600;
+            color: #334155;
+            transition: all 0.25s ease;
+        }
+
+        .nav-link:hover {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.18);
+        }
+
+        .dropdown-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            color: #1f2937;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-link:hover {
+            background: #f8fafc;
+        }
+
+        .dropdown-link-danger {
+            color: #dc2626;
+        }
+
+        .dropdown-link-danger:hover {
+            background: #fef2f2;
+        }
+
+        .footer-link {
+            color: #64748b;
+            transition: color 0.2s ease;
+        }
+
+        .footer-link:hover {
+            color: #2563eb;
+        }
+
+        .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 18px;
+            font-weight: 600;
+            color: #334155;
+            transition: all 0.2s ease;
+        }
+
+        .mobile-nav-link:hover {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .mobile-nav-link.active {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+        }
+    </style>
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body class="bg-slate-50 text-slate-800">
+
+<!-- NAVBAR -->
+<header class="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-screen-2xl mx-auto px-6 sm:px-8 lg:px-12">
+        <div class="flex items-center justify-between h-20">
+
+            <!-- LEFT -->
+            <div class="flex items-center gap-8">
+                <a href="{% url 'home_page' %}" class="flex items-center gap-3 group">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center shadow-lg shadow-blue-200 text-lg">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div>
+                        <p class="text-[27px] leading-none font-extrabold text-slate-900">
+                            Tpu <span class="text-blue-600">lib</span>
+                        </p>
+                        <p class="text-[11px] text-slate-400 font-medium mt-1 hidden sm:block">
+                            Raqamli kutubxona
+                        </p>
+                    </div>
+                </a>
+
+                <nav class="hidden md:flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-full p-1.5">
+                    <a href="{% url 'home_page' %}"
+                       class="nav-link {% if request.path == '/' %}active{% endif %}">
+                        <i class="fas fa-house text-sm"></i>
+                        <span>Bosh sahifa</span>
+                    </a>
+
+                    <a href="{% url 'public_library' %}"
+                       class="nav-link {% if '/kutubxona' in request.path or '/books/' in request.path %}active{% endif %}">
+                        <i class="fas fa-books text-sm"></i>
+                        <span>Kutubxona</span>
+                    </a>
+
+                    {% if request.user.is_authenticated %}
+                        {% if request.user.is_superuser or request.user.is_staff %}
+                            <a href="{% url 'admin_panel' %}"
+                               class="nav-link {% if '/panel/admin/' in request.path %}active{% endif %}">
+                                <i class="fas fa-user-shield text-sm"></i>
+                                <span>Admin panel</span>
+                            </a>
+                        {% endif %}
+
+                        {% if request.user.teacher_profile %}
+                            <a href="{% url 'teacher_panel' %}"
+                               class="nav-link {% if '/panel/teacher/' in request.path %}active{% endif %}">
+                                <i class="fas fa-chalkboard-teacher text-sm"></i>
+                                <span>Ustoz kabineti</span>
+                            </a>
+                        {% endif %}
+
+                        {% if request.user.student_profile %}
+                            <a href="{% url 'student_panel' %}"
+                               class="nav-link {% if '/panel/student/' in request.path %}active{% endif %}">
+                                <i class="fas fa-user-graduate text-sm"></i>
+                                <span>Talaba kabineti</span>
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                </nav>
+            </div>
+
+            <!-- RIGHT -->
+            <div class="flex items-center gap-3">
+
+                <!-- MOBILE BUTTON -->
+                <button id="mobileMenuButton"
+                        type="button"
+                        class="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-50 transition">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                {% if request.user.is_authenticated %}
+                <div class="relative">
+                    <!-- PROFILE BUTTON -->
+                    <button id="profileButton"
+                            type="button"
+                            onclick="toggleDropdown()"
+                            class="flex items-center gap-3 px-2.5 py-1.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 shadow-sm transition">
+
+                        <div class="w-11 h-11 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-bold shadow-md">
+                            {% if request.user.first_name %}
+                                {{ request.user.first_name|slice:":1"|upper }}
+                            {% else %}
+                                {{ request.user.username|slice:":1"|upper }}
+                            {% endif %}
+                        </div>
+
+                        <div class="hidden sm:block text-left pr-2">
+                            <p class="text-sm font-semibold text-slate-800 leading-tight">
+                                {% if request.user.first_name or request.user.last_name %}
+                                    {{ request.user.first_name }} {{ request.user.last_name }}
+                                {% else %}
+                                    {{ request.user.username }}
+                                {% endif %}
+                            </p>
+
+                            {% if request.user.is_superuser %}
+                                <p class="text-xs text-slate-400 mt-0.5">Super Admin</p>
+                            {% elif request.user.is_staff %}
+                                <p class="text-xs text-slate-400 mt-0.5">Kutubxonachi</p>
+                            {% elif request.user.teacher_profile %}
+                                <p class="text-xs text-slate-400 mt-0.5">O‘qituvchi</p>
+                            {% elif request.user.student_profile %}
+                                <p class="text-xs text-slate-400 mt-0.5">Talaba</p>
+                            {% else %}
+                                <p class="text-xs text-slate-400 mt-0.5">Foydalanuvchi</p>
+                            {% endif %}
+                        </div>
+
+                        <i class="fas fa-chevron-down text-xs text-slate-400 hidden sm:block"></i>
+                    </button>
+
+                    <!-- DROPDOWN -->
+                    <div id="profile-dropdown"
+                         class="hidden absolute right-0 mt-3 w-80 bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden z-50">
+
+                        <!-- USER INFO -->
+                        <div class="px-5 py-5 border-b border-slate-100 bg-slate-50/70">
+                            <div class="flex items-start gap-4">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-bold text-lg shadow-md">
+                                    {% if request.user.first_name %}
+                                        {{ request.user.first_name|slice:":1"|upper }}
+                                    {% else %}
+                                        {{ request.user.username|slice:":1"|upper }}
+                                    {% endif %}
+                                </div>
+
+                                <div class="min-w-0">
+                                    <p class="font-bold text-slate-900 text-lg leading-tight">
+                                        {% if request.user.first_name or request.user.last_name %}
+                                            {{ request.user.first_name }} {{ request.user.last_name }}
+                                        {% else %}
+                                            {{ request.user.username }}
+                                        {% endif %}
+                                    </p>
+
+                                    {% if request.user.is_superuser %}
+                                        <p class="text-sm text-slate-500 mt-1">Super Admin</p>
+                                    {% elif request.user.is_staff %}
+                                        <p class="text-sm text-slate-500 mt-1">Kutubxonachi</p>
+                                    {% elif request.user.teacher_profile %}
+                                        <p class="text-sm text-slate-500 mt-1">O‘qituvchi</p>
+                                    {% elif request.user.student_profile %}
+                                        <p class="text-sm text-slate-500 mt-1">Talaba</p>
+                                    {% endif %}
+
+                                    <p class="text-xs text-slate-400 mt-1">
+                                        {{ request.user.email|default:"tpulib@edu.uz" }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if request.user.is_superuser %}
+                            <a href="{% url 'admin_panel' %}" class="dropdown-link">
+                                <i class="fas fa-crown text-yellow-500 w-5"></i>
+                                <span>Super Admin Panel</span>
+                            </a>
+
+                            <a href="/admin/" class="dropdown-link">
+                                <i class="fas fa-screwdriver-wrench text-blue-600 w-5"></i>
+                                <span>Django Admin</span>
+                            </a>
+                        {% endif %}
+
+                        {% if request.user.is_staff and not request.user.is_superuser %}
+                            <a href="{% url 'admin_panel' %}" class="dropdown-link">
+                                <i class="fas fa-user-shield text-blue-600 w-5"></i>
+                                <span>Admin Panel</span>
+                            </a>
+
+                            <a href="{% url 'admin_profile' %}" class="dropdown-link">
+                                <i class="fas fa-id-badge text-indigo-600 w-5"></i>
+                                <span>Mening profilim</span>
+                            </a>
+                        {% endif %}
+
+                        {% if request.user.teacher_profile %}
+                            <a href="{% url 'teacher_panel' %}" class="dropdown-link">
+                                <i class="fas fa-chalkboard-teacher text-green-600 w-5"></i>
+                                <span>O‘qituvchi kabineti</span>
+                            </a>
+
+                            <a href="{% url 'teacher_my_books' %}" class="dropdown-link">
+                                <i class="fas fa-book text-blue-600 w-5"></i>
+                                <span>Mening kitoblarim</span>
+                            </a>
+                        {% endif %}
+
+                        {% if request.user.student_profile %}
+                            <a href="{% url 'student_panel' %}" class="dropdown-link">
+                                <i class="fas fa-user-graduate text-indigo-600 w-5"></i>
+                                <span>Talaba kabineti</span>
+                            </a>
+
+                            <a href="{% url 'student_books' %}" class="dropdown-link">
+                                <i class="fas fa-books text-blue-600 w-5"></i>
+                                <span>Kitoblar</span>
+                            </a>
+
+                            <a href="{% url 'student_favorites' %}" class="dropdown-link">
+                                <i class="fas fa-heart text-rose-500 w-5"></i>
+                                <span>Sevimli kitoblarim</span>
+                            </a>
+                        {% endif %}
+
+                        <div class="border-t border-slate-100"></div>
+
+                        <a href="{% url 'logout' %}" class="dropdown-link dropdown-link-danger">
+                            <i class="fas fa-sign-out-alt w-5"></i>
+                            <span>Chiqish</span>
+                        </a>
+                    </div>
+                </div>
+
+                {% else %}
+                <a href="{% url 'login' %}"
+                   class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-800 hover:to-indigo-800 text-white rounded-2xl font-semibold transition shadow-lg shadow-blue-200">
+                    <i class="fas fa-right-to-bracket"></i>
+                    <span>Kirish</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- MOBILE MENU -->
+        <div id="mobileMenu" class="hidden md:hidden pb-5">
+            <div class="pt-3 flex flex-col gap-2">
+                <a href="{% url 'home_page' %}"
+                   class="mobile-nav-link {% if request.path == '/' %}active{% endif %}">
+                    <i class="fas fa-house w-5"></i>
+                    <span>Bosh sahifa</span>
+                </a>
+
+                <a href="{% url 'public_library' %}"
+                   class="mobile-nav-link {% if '/kutubxona' in request.path or '/books/' in request.path %}active{% endif %}">
+                    <i class="fas fa-books w-5"></i>
+                    <span>Kutubxona</span>
+                </a>
+
+                {% if request.user.is_authenticated %}
+                    {% if request.user.is_superuser or request.user.is_staff %}
+                        <a href="{% url 'admin_panel' %}"
+                           class="mobile-nav-link {% if '/panel/admin/' in request.path %}active{% endif %}">
+                            <i class="fas fa-user-shield w-5"></i>
+                            <span>Admin panel</span>
+                        </a>
+                    {% endif %}
+
+                    {% if request.user.teacher_profile %}
+                        <a href="{% url 'teacher_panel' %}"
+                           class="mobile-nav-link {% if '/panel/teacher/' in request.path %}active{% endif %}">
+                            <i class="fas fa-chalkboard-teacher w-5"></i>
+                            <span>Ustoz kabineti</span>
+                        </a>
+                    {% endif %}
+
+                    {% if request.user.student_profile %}
+                        <a href="{% url 'student_panel' %}"
+                           class="mobile-nav-link {% if '/panel/student/' in request.path %}active{% endif %}">
+                            <i class="fas fa-user-graduate w-5"></i>
+                            <span>Talaba kabineti</span>
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</header>
+
+<!-- CONTENT -->
+<main class="w-full min-h-[70vh]">
+    {% block content %}{% endblock %}
+</main>
+
+<!-- FOOTER -->
+<footer class="bg-white border-t border-slate-200 mt-0">
+    <div class="max-w-screen-2xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+
+            <!-- Brand -->
+            <div>
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center shadow-lg shadow-blue-200 text-lg">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-extrabold text-slate-900">
+                            Tpu <span class="text-blue-600">lib</span>
+                        </p>
+                        <p class="text-xs text-slate-400 font-medium mt-1">
+                            Tashkent Perfect University
+                        </p>
+                    </div>
+                </div>
+
+                <p class="text-slate-500 leading-7 text-sm max-w-md">
+                    Tashkent Perfect University raqamli kutubxonasi — talabalar, o‘qituvchilar va kutubxonachilar uchun zamonaviy elektron resurslar platformasi.
+                </p>
+            </div>
+
+            <!-- Links -->
+            <div>
+                <h3 class="text-sm font-bold uppercase tracking-[0.2em] text-slate-700 mb-4">
+                    Tezkor havolalar
+                </h3>
+                <div class="flex flex-col gap-3 text-sm">
+                    <a href="{% url 'home_page' %}" class="footer-link">Bosh sahifa</a>
+                    <a href="{% url 'public_library' %}" class="footer-link">Kutubxona</a>
+
+                    {% if request.user.is_authenticated %}
+                        {% if request.user.is_superuser or request.user.is_staff %}
+                            <a href="{% url 'admin_panel' %}" class="footer-link">Admin panel</a>
+                        {% endif %}
+
+                        {% if request.user.teacher_profile %}
+                            <a href="{% url 'teacher_panel' %}" class="footer-link">Ustoz kabineti</a>
+                            <a href="{% url 'teacher_my_books' %}" class="footer-link">Mening kitoblarim</a>
+                        {% endif %}
+
+                        {% if request.user.student_profile %}
+                            <a href="{% url 'student_panel' %}" class="footer-link">Talaba kabineti</a>
+                            <a href="{% url 'student_favorites' %}" class="footer-link">Sevimlilar</a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'login' %}" class="footer-link">Tizimga kirish</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Contact -->
+            <div>
+                <h3 class="text-sm font-bold uppercase tracking-[0.2em] text-slate-700 mb-4">
+                    Aloqa
+                </h3>
+                <div class="space-y-3 text-sm text-slate-500">
+                    <p class="flex items-center gap-3">
+                        <i class="fas fa-envelope text-blue-600 w-4"></i>
+                        <span>tpulib@edu.uz</span>
+                    </p>
+                    <p class="flex items-center gap-3">
+                        <i class="fas fa-location-dot text-blue-600 w-4"></i>
+                        <span>Tashkent Perfect University</span>
+                    </p>
+                    <p class="flex items-center gap-3">
+                        <i class="fas fa-shield-halved text-blue-600 w-4"></i>
+                        <span>Xavfsiz va online kutubxona tizimi</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-10 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-400">
+            <p>© 2026 Tpulib. Barcha huquqlar himoyalangan.</p>
+            <p>Tashkent Perfect University Digital Library Platform</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    function toggleDropdown() {
+        const dropdown = document.getElementById("profile-dropdown");
+        if (dropdown) {
+            dropdown.classList.toggle("hidden");
+        }
+    }
+
+    document.addEventListener("click", function (e) {
+        const dropdown = document.getElementById("profile-dropdown");
+        const button = document.getElementById("profileButton");
+
+        if (!dropdown || !button) return;
+
+        if (!button.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add("hidden");
+        }
+    });
+
+    const mobileMenuButton = document.getElementById("mobileMenuButton");
+    const mobileMenu = document.getElementById("mobileMenu");
+
+    if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener("click", function () {
+            mobileMenu.classList.toggle("hidden");
+        });
+    }
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

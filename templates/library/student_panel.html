@@ -1,0 +1,561 @@
+{% extends "library/base.html" %}
+
+{% block title %}Talaba Kabineti - Tpulib{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-sky-50 rounded-[24px] overflow-hidden shadow-sm">
+    <div class="flex min-h-screen flex-col xl:flex-row">
+
+        <!-- SIDEBAR -->
+        <aside class="w-full xl:w-72 bg-white border-r border-slate-200 flex flex-col shrink-0">
+            <div class="p-7 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xl shadow-lg">
+                        📚
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-extrabold text-[#1e3a8a] leading-none">Tpulib</h1>
+                        <p class="text-sm text-slate-500 mt-1">Talaba kabineti</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 px-5 py-5 space-y-2">
+                <button type="button"
+                        data-section="dashboard"
+                        class="student-link active w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-slate-700 hover:bg-slate-50 transition">
+                    <span class="icon-wrap w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">📊</span>
+                    <span>Dashboard</span>
+                </button>
+
+                <button type="button"
+                        data-section="books"
+                        class="student-link w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-slate-700 hover:bg-slate-50 transition">
+                    <span class="icon-wrap w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">📚</span>
+                    <span>Kitoblar</span>
+                </button>
+
+                <button type="button"
+                        data-section="favorites"
+                        class="student-link w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-slate-700 hover:bg-slate-50 transition">
+                    <span class="icon-wrap w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">❤️</span>
+                    <span>Sevimlilar</span>
+                </button>
+
+                <button type="button"
+                        data-section="library"
+                        class="student-link w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-slate-700 hover:bg-slate-50 transition">
+                    <span class="icon-wrap w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">🌐</span>
+                    <span>Kutubxona</span>
+                </button>
+
+                <button type="button"
+                        data-section="profile"
+                        class="student-link w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-slate-700 hover:bg-slate-50 transition">
+                    <span class="icon-wrap w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">👤</span>
+                    <span>Profil</span>
+                </button>
+            </nav>
+
+            <div class="p-5 border-t border-slate-100 space-y-3">
+                <a href="{% url 'home_page' %}"
+                   class="flex items-center gap-3 px-4 py-3.5 text-slate-700 hover:bg-slate-50 rounded-2xl font-medium transition">
+                    <span class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">🏠</span>
+                    <span>Bosh sahifa</span>
+                </a>
+
+                <a href="{% url 'public_library' %}"
+                   class="flex items-center gap-3 px-4 py-3.5 text-slate-700 hover:bg-slate-50 rounded-2xl font-medium transition">
+                    <span class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">🌐</span>
+                    <span>Kutubxona</span>
+                </a>
+
+                <a href="{% url 'logout' %}"
+                   class="flex items-center gap-3 px-4 py-3.5 text-red-600 hover:bg-red-50 rounded-2xl font-medium transition">
+                    <span class="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-lg">🚪</span>
+                    <span>Chiqish</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="flex-1 overflow-auto">
+            <!-- TOPBAR -->
+            <div class="bg-white/90 backdrop-blur border-b border-slate-200 px-7 lg:px-8 py-4 flex items-center justify-between sticky top-0 z-20">
+                <div>
+                    <h2 id="page-title" class="text-xl font-bold text-slate-800">Dashboard</h2>
+                    <p id="page-subtitle" class="text-xs text-slate-500 mt-1">Talaba uchun shaxsiy kabinet</p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="hidden sm:flex items-center gap-2 bg-emerald-50 text-emerald-700 px-3 py-2 rounded-xl text-xs font-medium">
+                        <span class="text-emerald-500">●</span>
+                        Online
+                    </div>
+
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-semibold text-slate-800">
+                            {{ profile.first_name }} {{ profile.last_name }}
+                        </p>
+                        <p class="text-xs text-slate-400">Talaba</p>
+                    </div>
+
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg">
+                        {{ profile.first_name|slice:":1"|upper }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 lg:p-7">
+
+                <!-- DASHBOARD -->
+                <section id="dashboard-section" class="student-section active">
+                    <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5 mb-6">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#1554d1] mb-2">
+                                Talaba kabineti
+                            </p>
+                            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 leading-tight">
+                                Salom, {{ profile.first_name }} 👋
+                            </h1>
+                            <p class="text-slate-500 mt-2 text-sm sm:text-base">
+                                Bugun yangi kitoblarni ko‘rib chiqing, sevimlilarni tekshiring va o‘qishni davom ettiring.
+                            </p>
+                        </div>
+
+                        <div class="flex flex-wrap gap-3">
+                            <a href="{% url 'student_books' %}"
+                               class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-[#1554d1] text-white font-semibold shadow-lg shadow-blue-200 hover:bg-[#0f45b0] transition">
+                                <span>📚</span>
+                                <span>Kitoblar</span>
+                            </a>
+
+                            <a href="{% url 'student_favorites' %}"
+                               class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl border border-slate-300 bg-white text-slate-700 font-semibold hover:bg-slate-50 transition">
+                                <span>❤️</span>
+                                <span>Sevimlilar</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-white rounded-[24px] border border-blue-100 shadow-sm p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 bg-rose-100 rounded-xl flex items-center justify-center text-2xl">❤️</div>
+                                <div>
+                                    <p class="text-2xl font-extrabold text-slate-800 leading-none">{{ favorite_books_count|default:0 }}</p>
+                                    <p class="text-slate-500 text-xs mt-1">Sevimlilar</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-[24px] border border-blue-100 shadow-sm p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">📚</div>
+                                <div>
+                                    <p class="text-2xl font-extrabold text-slate-800 leading-none">{{ total_books_count|default:0 }}</p>
+                                    <p class="text-slate-500 text-xs mt-1">Jami kitoblar</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-[24px] border border-blue-100 shadow-sm p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 bg-emerald-100 rounded-xl flex items-center justify-center text-2xl">📖</div>
+                                <div>
+                                    <p class="text-2xl font-extrabold text-slate-800 leading-none">{{ latest_books|length|default:0 }}</p>
+                                    <p class="text-slate-500 text-xs mt-1">Yangi kitoblar</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-[24px] border border-blue-100 shadow-sm p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 bg-purple-100 rounded-xl flex items-center justify-center text-2xl">🎓</div>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-extrabold text-slate-800 truncate">{{ profile.group|default:"—" }}</p>
+                                    <p class="text-slate-500 text-xs mt-1">{{ profile.course }}-kurs</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts + profile -->
+                    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 mb-6">
+                        <div class="xl:col-span-8 bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                            <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-800">Faollik grafigi</h2>
+                                    <p class="text-slate-500 mt-1 text-sm">Talabaning umumiy kutubxona faolligi</p>
+                                </div>
+                            </div>
+                            <div class="h-[260px]">
+                                <canvas id="performanceChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="xl:col-span-4 bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                            <div class="flex items-center justify-between gap-3 mb-4">
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-800">Profil</h2>
+                                    <p class="text-slate-500 mt-1 text-sm">Qisqa ma’lumot</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div class="bg-slate-50 rounded-xl p-3">
+                                    <p class="text-xs text-slate-500 mb-1">F.I.Sh</p>
+                                    <p class="font-semibold text-slate-800">{{ profile.first_name }} {{ profile.last_name }}</p>
+                                </div>
+
+                                <div class="bg-slate-50 rounded-xl p-3">
+                                    <p class="text-xs text-slate-500 mb-1">Guruh</p>
+                                    <p class="font-semibold text-slate-800">{{ profile.group|default:"—" }}</p>
+                                </div>
+
+                                <div class="bg-slate-50 rounded-xl p-3">
+                                    <p class="text-xs text-slate-500 mb-1">Kurs</p>
+                                    <p class="font-semibold text-slate-800">{{ profile.course }}-kurs</p>
+                                </div>
+
+                                <div class="bg-slate-50 rounded-xl p-3">
+                                    <p class="text-xs text-slate-500 mb-1">Telefon</p>
+                                    <p class="font-semibold text-slate-800">{{ profile.phone|default:"—" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom blocks -->
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                            <div class="flex items-center justify-between gap-3 mb-4">
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-800">Sevimli kitoblar</h2>
+                                    <p class="text-slate-500 mt-1 text-sm">Oxirgi saqlanganlar</p>
+                                </div>
+                                <a href="{% url 'student_favorites' %}" class="text-sm text-blue-600 hover:underline">
+                                    Barchasi
+                                </a>
+                            </div>
+
+                            <div class="space-y-3">
+                                {% for fav in latest_favorites %}
+                                <div class="flex items-center justify-between gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-slate-800 truncate text-sm">{{ fav.book.title }}</p>
+                                        <p class="text-xs text-slate-500 truncate">{{ fav.book.author }}</p>
+                                    </div>
+                                    <a href="{% url 'book_read' fav.book.id %}"
+                                       class="px-3 py-2 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition shrink-0">
+                                        O‘qish
+                                    </a>
+                                </div>
+                                {% empty %}
+                                <div class="rounded-xl border border-slate-100 bg-slate-50 p-6 text-center text-slate-500 text-sm">
+                                    Hozircha sevimli kitoblar yo‘q
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                            <div class="flex items-center justify-between gap-3 mb-4">
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-800">Eng yangi kitoblar</h2>
+                                    <p class="text-slate-500 mt-1 text-sm">Kutubxonadagi so‘nggi kitoblar</p>
+                                </div>
+                                <a href="{% url 'public_library' %}" class="text-sm text-blue-600 hover:underline">
+                                    Barchasi
+                                </a>
+                            </div>
+
+                            <div class="space-y-3">
+                                {% for book in latest_books %}
+                                <div class="flex items-center justify-between gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-slate-800 truncate text-sm">{{ book.title }}</p>
+                                        <p class="text-xs text-slate-500 truncate">{{ book.author }}</p>
+                                    </div>
+                                    <a href="{% url 'book_read' book.id %}"
+                                       class="px-3 py-2 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition shrink-0">
+                                        O‘qish
+                                    </a>
+                                </div>
+                                {% empty %}
+                                <div class="rounded-xl border border-slate-100 bg-slate-50 p-6 text-center text-slate-500 text-sm">
+                                    Hozircha yangi kitoblar yo‘q
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- BOOKS -->
+                <section id="books-section" class="student-section">
+                    <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                        <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800">Kitoblar bo‘limi</h2>
+                                <p class="text-slate-500 mt-1 text-sm">Barcha kitoblarni ko‘rish, qidirish va online o‘qish</p>
+                            </div>
+                            <div class="flex flex-wrap gap-3">
+                                <a href="{% url 'student_books' %}"
+                                   class="px-5 py-3 rounded-2xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
+                                    Bo‘limga o‘tish
+                                </a>
+                                <button type="button"
+                                        onclick="showStudentSection('dashboard')"
+                                        class="px-5 py-3 rounded-2xl border border-slate-300 bg-white text-slate-700 font-medium hover:bg-slate-50 transition">
+                                    Ortga qaytish
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-slate-600 text-sm leading-7">
+                            Bu bo‘lim orqali kitoblarni ko‘rish, filter qilish, qidirish va online o‘qish mumkin.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- FAVORITES -->
+                <section id="favorites-section" class="student-section">
+                    <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                        <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800">Sevimli kitoblar</h2>
+                                <p class="text-slate-500 mt-1 text-sm">Saqlab qo‘yilgan kitoblar ro‘yxati</p>
+                            </div>
+                            <div class="flex flex-wrap gap-3">
+                                <a href="{% url 'student_favorites' %}"
+                                   class="px-5 py-3 rounded-2xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
+                                    Bo‘limga o‘tish
+                                </a>
+                                <button type="button"
+                                        onclick="showStudentSection('dashboard')"
+                                        class="px-5 py-3 rounded-2xl border border-slate-300 bg-white text-slate-700 font-medium hover:bg-slate-50 transition">
+                                    Ortga qaytish
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-slate-600 text-sm leading-7">
+                            Bu bo‘lim orqali siz sevimlilarga qo‘shgan kitoblaringizni ko‘rishingiz mumkin.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- LIBRARY -->
+                <section id="library-section" class="student-section">
+                    <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                        <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800">Kutubxona</h2>
+                                <p class="text-slate-500 mt-1 text-sm">Umumiy kutubxona va barcha resurslar</p>
+                            </div>
+                            <div class="flex flex-wrap gap-3">
+                                <a href="{% url 'public_library' %}"
+                                   class="px-5 py-3 rounded-2xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
+                                    Kutubxonaga o‘tish
+                                </a>
+                                <button type="button"
+                                        onclick="showStudentSection('dashboard')"
+                                        class="px-5 py-3 rounded-2xl border border-slate-300 bg-white text-slate-700 font-medium hover:bg-slate-50 transition">
+                                    Ortga qaytish
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-slate-600 text-sm leading-7">
+                            Kutubxona bo‘limi orqali barcha mavjud kitoblarni qidirish, filter qilish va online o‘qish mumkin.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- PROFILE -->
+                <section id="profile-section" class="student-section">
+                    <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                        <div class="flex items-center justify-between gap-4 mb-5 flex-wrap">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800">Profil</h2>
+                                <p class="text-slate-500 mt-1 text-sm">Talaba ma’lumotlari</p>
+                            </div>
+
+                            <button type="button"
+                                    onclick="showStudentSection('dashboard')"
+                                    class="px-5 py-3 rounded-2xl border border-slate-300 bg-white text-slate-700 font-medium hover:bg-slate-50 transition">
+                                Ortga qaytish
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-slate-50 rounded-xl p-3">
+                                <p class="text-xs text-slate-500 mb-1">Ism</p>
+                                <p class="font-semibold text-slate-800">{{ profile.first_name }}</p>
+                            </div>
+
+                            <div class="bg-slate-50 rounded-xl p-3">
+                                <p class="text-xs text-slate-500 mb-1">Familya</p>
+                                <p class="font-semibold text-slate-800">{{ profile.last_name }}</p>
+                            </div>
+
+                            <div class="bg-slate-50 rounded-xl p-3">
+                                <p class="text-xs text-slate-500 mb-1">Sharif</p>
+                                <p class="font-semibold text-slate-800">{{ profile.middle_name|default:"—" }}</p>
+                            </div>
+
+                            <div class="bg-slate-50 rounded-xl p-3">
+                                <p class="text-xs text-slate-500 mb-1">Jins</p>
+                                <p class="font-semibold text-slate-800">{{ profile.gender|default:"—" }}</p>
+                            </div>
+
+                            <div class="bg-slate-50 rounded-xl p-3">
+                                <p class="text-xs text-slate-500 mb-1">Guruh</p>
+                                <p class="font-semibold text-slate-800">{{ profile.group|default:"—" }}</p>
+                            </div>
+
+                            <div class="bg-slate-50 rounded-xl p-3">
+                                <p class="text-xs text-slate-500 mb-1">Kurs</p>
+                                <p class="font-semibold text-slate-800">{{ profile.course }}-kurs</p>
+                            </div>
+
+                            <div class="bg-slate-50 rounded-xl p-3 md:col-span-2">
+                                <p class="text-xs text-slate-500 mb-1">Telefon</p>
+                                <p class="font-semibold text-slate-800">{{ profile.phone|default:"—" }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 flex flex-wrap gap-3">
+                            <a href="{% url 'home_page' %}"
+                               class="px-5 py-3 rounded-2xl border border-slate-300 bg-white text-slate-700 font-medium hover:bg-slate-50 transition">
+                                Bosh sahifa
+                            </a>
+                            <a href="{% url 'public_library' %}"
+                               class="px-5 py-3 rounded-2xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
+                                Kutubxona
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<style>
+    .student-link.active {
+        background: #eff6ff;
+        color: #1e3a8a;
+        font-weight: 600;
+    }
+
+    .student-link.active .icon-wrap {
+        background: #dbeafe;
+    }
+
+    .student-section {
+        display: none;
+    }
+
+    .student-section.active {
+        display: block;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    const studentTitles = {
+        dashboard: {
+            title: "Dashboard",
+            subtitle: "Talaba uchun shaxsiy kabinet"
+        },
+        books: {
+            title: "Kitoblar",
+            subtitle: "Kitoblar bo‘limi"
+        },
+        favorites: {
+            title: "Sevimlilar",
+            subtitle: "Saqlangan kitoblar"
+        },
+        library: {
+            title: "Kutubxona",
+            subtitle: "Umumiy kutubxona bo‘limi"
+        },
+        profile: {
+            title: "Profil",
+            subtitle: "Talaba ma’lumotlari"
+        }
+    };
+
+    function showStudentSection(sectionName) {
+        document.querySelectorAll('.student-section').forEach(section => {
+            section.classList.remove('active');
+        });
+
+        document.querySelectorAll('.student-link').forEach(link => {
+            link.classList.remove('active');
+        });
+
+        const currentSection = document.getElementById(sectionName + '-section');
+        const currentButton = document.querySelector(`.student-link[data-section="${sectionName}"]`);
+        const pageTitle = document.getElementById('page-title');
+        const pageSubtitle = document.getElementById('page-subtitle');
+
+        if (currentSection) currentSection.classList.add('active');
+        if (currentButton) currentButton.classList.add('active');
+
+        if (pageTitle && studentTitles[sectionName]) {
+            pageTitle.textContent = studentTitles[sectionName].title;
+        }
+
+        if (pageSubtitle && studentTitles[sectionName]) {
+            pageSubtitle.textContent = studentTitles[sectionName].subtitle;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.student-link').forEach(button => {
+            button.addEventListener('click', function () {
+                const sectionName = this.getAttribute('data-section');
+                showStudentSection(sectionName);
+            });
+        });
+
+        showStudentSection('dashboard');
+
+        const performanceChartElement = document.getElementById('performanceChart');
+        if (performanceChartElement) {
+            new Chart(performanceChartElement, {
+                type: 'line',
+                data: {
+                    labels: ['Du', 'Se', 'Cho', 'Pa', 'Ju', 'Sha', 'Yak'],
+                    datasets: [{
+                        label: 'Faollik',
+                        data: [42, 68, 35, 81, 55, 72, 60],
+                        borderColor: '#3d5afe',
+                        backgroundColor: 'rgba(61,90,254,0.12)',
+                        fill: true,
+                        tension: 0.45,
+                        pointBackgroundColor: '#3d5afe',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#eef2ff' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

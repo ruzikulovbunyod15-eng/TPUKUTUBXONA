@@ -1,0 +1,232 @@
+{% extends "library/base.html" %}
+
+{% block title %}O‘qituvchilar{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-sky-50">
+    <div class="max-w-screen-2xl mx-auto px-6 sm:px-8 lg:px-12 py-10">
+
+        <!-- HEADER -->
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#1554d1] mb-2">
+                    Admin panel
+                </p>
+                <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-900">
+                    O‘qituvchilar ro‘yxati
+                </h1>
+                <p class="text-slate-500 mt-2">
+                    O‘qituvchilarni qidirish, filtrlash va boshqarish
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <a href="{% url 'teacher_add' %}"
+                   class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#1554d1] text-white font-semibold shadow-lg shadow-blue-200 hover:bg-[#0f45b0] transition">
+                    <span>＋</span>
+                    <span>Yangi o‘qituvchi</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- FILTER CARD -->
+        <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm p-6 sm:p-8 mb-8">
+            <form method="get" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <div class="xl:col-span-2">
+                    <label class="block text-sm font-medium text-slate-600 mb-2">Qidiruv</label>
+                    <input
+                        type="text"
+                        name="q"
+                        value="{{ request.GET.q }}"
+                        placeholder="Ism, familya, login, kafedra..."
+                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 mb-2">Kafedra</label>
+                    <select
+                        name="department"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                    >
+                        <option value="">Barcha kafedralar</option>
+                        {% for d in departments %}
+                            <option value="{{ d }}" {% if request.GET.department == d %}selected{% endif %}>
+                                {{ d }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 mb-2">Jins</label>
+                    <select
+                        name="gender"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                    >
+                        <option value="">Barcha jinslar</option>
+                        <option value="erkak" {% if request.GET.gender == 'erkak' %}selected{% endif %}>Erkak</option>
+                        <option value="ayol" {% if request.GET.gender == 'ayol' %}selected{% endif %}>Ayol</option>
+                    </select>
+                </div>
+
+                <div class="md:col-span-2 xl:col-span-4 flex flex-wrap gap-3 pt-2">
+                    <button
+                        type="submit"
+                        class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#1554d1] text-white font-semibold hover:bg-[#0f45b0] transition"
+                    >
+                        <span>🔎</span>
+                        <span>Qidirish</span>
+                    </button>
+
+                    <a
+                        href="{% url 'teachers_list' %}"
+                        class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition"
+                    >
+                        <span>↺</span>
+                        <span>Tozalash</span>
+                    </a>
+
+                    <a
+                        href="{% url 'admin_panel' %}"
+                        class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl border border-slate-300 bg-white text-slate-700 font-semibold hover:bg-slate-50 transition"
+                    >
+                        <span>←</span>
+                        <span>Ro‘yxatga qaytish</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- INFO -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+            <p class="text-slate-600">
+                Jami topildi: <span class="font-bold text-slate-900">{{ teachers|length }}</span> ta o‘qituvchi
+            </p>
+        </div>
+
+        <!-- TABLE -->
+        <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-slate-50 border-b border-slate-200">
+                        <tr>
+                            <th class="px-6 py-4 text-left font-semibold text-slate-700">#</th>
+                            <th class="px-6 py-4 text-left font-semibold text-slate-700">F.I.Sh</th>
+                            <th class="px-6 py-4 text-left font-semibold text-slate-700">Jins</th>
+                            <th class="px-6 py-4 text-left font-semibold text-slate-700">Kafedra</th>
+                            <th class="px-6 py-4 text-left font-semibold text-slate-700">Login</th>
+                            <th class="px-6 py-4 text-left font-semibold text-slate-700">Parol</th>
+                            <th class="px-6 py-4 text-left font-semibold text-slate-700">Telefon</th>
+                            <th class="px-6 py-4 text-center font-semibold text-slate-700">Amallar</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-slate-100">
+                        {% for teacher in teachers %}
+                        <tr class="hover:bg-slate-50/70 transition">
+                            <!-- Index -->
+                            <td class="px-6 py-5 text-slate-500 font-medium">
+                                {{ forloop.counter }}
+                            </td>
+
+                            <!-- Name -->
+                            <td class="px-6 py-5 min-w-[220px]">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold shrink-0">
+                                        {{ teacher.first_name|slice:":1"|upper }}
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-slate-900">
+                                            {{ teacher.first_name }} {{ teacher.last_name }}
+                                        </p>
+                                        <p class="text-xs text-slate-500">
+                                            {{ teacher.middle_name|default:"Sharif kiritilmagan" }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Gender -->
+                            <td class="px-6 py-5">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+                                    {% if teacher.gender == 'erkak' %}
+                                        bg-sky-50 text-sky-700
+                                    {% else %}
+                                        bg-pink-50 text-pink-700
+                                    {% endif %}">
+                                    {{ teacher.gender|title }}
+                                </span>
+                            </td>
+
+                            <!-- Department -->
+                            <td class="px-6 py-5">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">
+                                    {{ teacher.department|default:"Kiritilmagan" }}
+                                </span>
+                            </td>
+
+                            <!-- Login -->
+                            <td class="px-6 py-5">
+                                <div class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-mono text-sm text-blue-600 inline-block">
+                                    {% if teacher.generated_login %}
+                                        {{ teacher.generated_login }}
+                                    {% elif teacher.user %}
+                                        {{ teacher.user.username }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </div>
+                            </td>
+
+                            <!-- Password -->
+                            <td class="px-6 py-5">
+                                <div class="bg-red-50 border border-red-100 rounded-xl px-3 py-2 font-semibold text-red-600 inline-block">
+                                    {{ teacher.generated_password|default:"-" }}
+                                </div>
+                            </td>
+
+                            <!-- Phone -->
+                            <td class="px-6 py-5 text-slate-600">
+                                {{ teacher.phone|default:"-" }}
+                            </td>
+
+                            <!-- Actions -->
+                            <td class="px-6 py-5">
+                                <div class="flex justify-center gap-2 flex-wrap min-w-[180px]">
+                                    <a href="{% url 'teacher_edit' teacher.pk %}"
+                                       class="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-amber-50 text-amber-700 font-medium hover:bg-amber-100 transition">
+                                        ✏️ Tahrirlash
+                                    </a>
+
+                                    <a href="{% url 'teacher_delete' teacher.pk %}"
+                                       class="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-red-50 text-red-600 font-medium hover:bg-red-100 transition">
+                                        🗑️ O‘chirish
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="px-6 py-16 text-center">
+                                <div class="flex flex-col items-center text-slate-500">
+                                    <div class="text-6xl mb-4">👩‍🏫</div>
+                                    <p class="text-xl font-semibold text-slate-700 mb-2">
+                                        O‘qituvchilar topilmadi
+                                    </p>
+                                    <p class="text-sm">
+                                        Qidiruv yoki filter bo‘yicha natija mavjud emas.
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

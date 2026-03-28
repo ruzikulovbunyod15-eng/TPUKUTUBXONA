@@ -1,0 +1,364 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tpulib - Raqamli Kutubxona{% endblock %}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            min-width: 0;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: #0f172a;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .logo span {
+            color: #2563eb;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-menu a {
+            color: #334155;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.25s ease;
+        }
+
+        .nav-menu a:hover {
+            color: #2563eb;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+        }
+
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 999px;
+            transition: background 0.25s ease;
+        }
+
+        .profile-btn:hover {
+            background: #f8fafc;
+        }
+
+        .profile-avatar {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #3b82f6, #1e3a8a);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
+            flex-shrink: 0;
+        }
+
+        .main-content {
+            max-width: 1600px;
+            margin: 40px auto;
+            padding: 0 24px;
+            min-height: calc(100vh - 160px);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 10px);
+            width: 280px;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.14);
+            border: 1px solid #e5e7eb;
+            padding: 10px 0;
+            z-index: 1200;
+            overflow: hidden;
+        }
+
+        .dropdown-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 22px;
+            color: #334155;
+            text-decoration: none;
+            transition: background 0.2s ease, color 0.2s ease;
+            font-weight: 500;
+        }
+
+        .dropdown-link:hover {
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        .dropdown-danger {
+            color: #dc2626;
+        }
+
+        .dropdown-danger:hover {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        footer {
+            background: #1e3a8a;
+            color: #e0f2fe;
+            padding: 60px 24px 40px;
+            margin-top: 100px;
+        }
+
+        .footer-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 40px;
+        }
+
+        .copyright {
+            max-width: 1600px;
+            margin: 60px auto 0;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.15);
+            opacity: 0.85;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 16px;
+            }
+
+            .nav-left {
+                justify-content: space-between;
+                gap: 16px;
+                flex-wrap: wrap;
+            }
+
+            .nav-menu {
+                gap: 16px;
+                flex-wrap: wrap;
+            }
+
+            .nav-right {
+                justify-content: flex-end;
+            }
+
+            .main-content {
+                padding: 0 16px;
+                margin: 24px auto;
+            }
+
+            .dropdown-menu {
+                width: 100%;
+                max-width: 320px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <!-- Logo -->
+                <a href="{% url 'home_page' %}" class="logo">
+                    Tpu<span>lib</span>
+                </a>
+
+                <!-- Menu -->
+                <ul class="nav-menu">
+                    <li><a href="{% url 'home_page' %}">Bosh sahifa</a></li>
+                    <li><a href="{% url 'public_library' %}">Kutubxona</a></li>
+                </ul>
+            </div>
+
+            <!-- Right Side -->
+            <div class="nav-right">
+                {% if request.user.is_authenticated %}
+                    <button type="button" class="profile-btn" id="profileBtn" onclick="toggleDropdown()">
+                        <span class="font-medium text-slate-700 hidden sm:inline">
+                            {{ request.user.get_full_name|default:request.user.username }}
+                        </span>
+                        <div class="profile-avatar">
+                            {{ request.user.username|slice:":1"|upper }}
+                        </div>
+                    </button>
+
+                    <!-- Dropdown -->
+                    <div id="user-dropdown" class="dropdown-menu hidden">
+                        <div class="px-6 py-4 border-b border-slate-100">
+                            <p class="font-semibold text-slate-900">
+                                {{ request.user.get_full_name|default:request.user.username }}
+                            </p>
+                            <p class="text-xs text-slate-500">
+                                {{ request.user.email|default:"tpulib@edu.uz" }}
+                            </p>
+                        </div>
+
+                        {% if request.user.is_superuser %}
+                            <a href="{% url 'admin_panel' %}" class="dropdown-link">
+                                <span>👑</span>
+                                <span>Super Admin Panel</span>
+                            </a>
+                        {% elif request.user.is_staff or request.user.admin_profile %}
+                            <a href="{% url 'admin_panel' %}" class="dropdown-link">
+                                <span>🛡️</span>
+                                <span>Admin Panel</span>
+                            </a>
+                        {% endif %}
+
+                        {% if request.user.student_profile %}
+                            <a href="{% url 'student_panel' %}" class="dropdown-link">
+                                <span>🎓</span>
+                                <span>Talaba kabineti</span>
+                            </a>
+                        {% endif %}
+
+                        {% if request.user.teacher_profile %}
+                            <a href="{% url 'teacher_panel' %}" class="dropdown-link">
+                                <span>👨‍🏫</span>
+                                <span>Ustoz kabineti</span>
+                            </a>
+                        {% endif %}
+
+                        <div class="border-t border-slate-100 my-2"></div>
+
+                        <a href="{% url 'logout' %}" class="dropdown-link dropdown-danger">
+                            <span>🚪</span>
+                            <span>Chiqish</span>
+                        </a>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}"
+                       class="px-8 py-3 bg-[#1e3a8a] text-white font-semibold rounded-3xl hover:bg-[#172554] transition-all">
+                        Kirish
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Asosiy kontent -->
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h3 class="text-white text-2xl font-bold mb-4">Tashkent Perfect University</h3>
+                <p class="max-w-md opacity-80">
+                    Raqamli Kutubxona tizimi — talabalar va o‘qituvchilar uchun zamonaviy bilim markazi.
+                </p>
+            </div>
+            <div>
+                <div class="footer-contact">
+                    <strong>Telefon:</strong> +998 77 129 29 29<br>
+                    <strong>Email:</strong> info@tpulib.uz
+                </div>
+            </div>
+        </div>
+
+        <div class="copyright">
+            &copy; 2026 Tashkent Perfect University. Barcha huquqlar himoyalangan.
+        </div>
+    </footer>
+
+    <script>
+        function toggleDropdown() {
+            const dropdown = document.getElementById('user-dropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('hidden');
+            }
+        }
+
+        document.addEventListener('click', function (e) {
+            const dropdown = document.getElementById('user-dropdown');
+            const profileBtn = document.getElementById('profileBtn');
+
+            if (!dropdown || !profileBtn) return;
+
+            if (!profileBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,127 @@
+{% extends "library/base.html" %}
+
+{% block title %}Sevimli kitoblarim{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-sky-50">
+    <div class="max-w-screen-2xl mx-auto px-6 sm:px-8 lg:px-12 py-10">
+
+        <!-- Header -->
+        <div class="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-6 mb-8">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#1554d1] mb-2">
+                    Talaba kabineti
+                </p>
+                <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-900">
+                    Sevimli kitoblarim
+                </h1>
+                <p class="text-slate-500 mt-2 text-base sm:text-lg">
+                    Siz saqlab qo‘ygan kitoblar ro‘yxati
+                </p>
+            </div>
+
+            <div class="flex gap-3">
+                <a href="{% url 'student_panel' %}"
+                   class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl border border-slate-300 bg-white text-slate-700 font-semibold hover:bg-slate-50 transition shadow-sm">
+                    ← Kabinetga qaytish
+                </a>
+            </div>
+        </div>
+
+        <!-- Info -->
+        <div class="mb-6">
+            <p class="text-slate-600">
+                Jami: <span class="font-bold text-slate-900">{{ favorites|length }}</span> ta kitob
+            </p>
+        </div>
+
+        <!-- GRID -->
+        {% if favorites %}
+        <div class="grid gap-8 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
+            {% for fav in favorites %}
+            <div class="bg-white rounded-[28px] overflow-hidden border border-blue-100 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
+
+                <!-- Cover -->
+                <div class="h-72 bg-slate-100 relative flex items-center justify-center overflow-hidden">
+
+                    <div class="w-44 h-60 bg-gradient-to-br from-blue-700 to-indigo-700 rounded-2xl flex flex-col items-center justify-center text-white shadow-inner">
+                        <span class="text-7xl mb-3">📖</span>
+                        <p class="text-center text-xs px-4 font-medium line-clamp-2">
+                            {{ fav.book.title }}
+                        </p>
+                    </div>
+
+                    <!-- Overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+
+                    <!-- Category badge -->
+                    {% if fav.book.category %}
+                    <div class="absolute top-4 left-4">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-white/90 text-blue-700 text-xs font-semibold shadow">
+                            {{ fav.book.category.name }}
+                        </span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Icon -->
+                    <div class="absolute bottom-4 left-4 text-white text-2xl">
+                        ❤️
+                    </div>
+                </div>
+
+                <!-- Info -->
+                <div class="p-6">
+                    <h3 class="font-semibold text-lg leading-tight line-clamp-2 mb-3 text-slate-900">
+                        {{ fav.book.title }}
+                    </h3>
+
+                    <p class="text-slate-600 text-sm mb-2">
+                        <span class="font-semibold text-slate-800">Muallif:</span>
+                        {{ fav.book.author }}
+                    </p>
+
+                    <p class="text-slate-600 text-sm mb-4">
+                        <span class="font-semibold text-slate-800">Bo‘lim:</span>
+                        {{ fav.book.category.name|default:"—" }}
+                    </p>
+
+                    <!-- Buttons -->
+                    <div class="flex flex-col gap-3 mt-4">
+
+                        <a href="{% url 'book_read' fav.book.id %}"
+                           class="text-center bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-2xl text-sm font-medium transition-all">
+                            📖 Online o‘qish
+                        </a>
+
+                        <a href="{% url 'toggle_student_favorite' fav.book.id %}?next={% url 'student_favorites' %}"
+                           class="text-center bg-rose-50 hover:bg-rose-100 text-rose-600 py-3 rounded-2xl text-sm font-medium transition-all">
+                            ❤️ Olib tashlash
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <!-- EMPTY STATE -->
+        <div class="bg-white rounded-[32px] border border-blue-100 shadow-sm p-16 text-center">
+            <p class="text-6xl mb-6">💔</p>
+            <h3 class="text-2xl font-bold text-slate-800 mb-3">
+                Sevimli kitoblar yo‘q
+            </h3>
+            <p class="text-slate-500 mb-8">
+                Siz hali hech qanday kitobni sevimlilar ro‘yxatiga qo‘shmagansiz.
+            </p>
+
+            <a href="{% url 'student_books' %}"
+               class="inline-flex items-center gap-2 bg-[#1e3a8a] text-white px-8 py-4 rounded-2xl font-semibold shadow-lg shadow-blue-200 hover:bg-[#172554] transition-all">
+                📚 Kitoblarni ko‘rish
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

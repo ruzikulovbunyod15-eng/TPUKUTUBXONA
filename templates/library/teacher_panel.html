@@ -1,0 +1,604 @@
+{% extends "library/base.html" %}
+
+{% block title %}Ustoz kabineti - Tpulib{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-sky-50 rounded-[24px] overflow-hidden shadow-sm">
+    <div class="flex min-h-screen flex-col xl:flex-row">
+
+        <!-- SIDEBAR -->
+        <aside class="w-full xl:w-72 bg-white border-r border-slate-200 flex flex-col shrink-0">
+            <div class="p-7 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xl shadow-lg">
+                        📚
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-extrabold text-[#1e3a8a] leading-none">Tpulib</h1>
+                        <p class="text-sm text-slate-500 mt-1">Ustoz kabineti</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 px-5 py-5 space-y-2">
+                <button type="button"
+                        data-section="dashboard"
+                        class="teacher-link active w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-slate-700 hover:bg-slate-50 transition">
+                    <span class="icon-wrap w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">📊</span>
+                    <span>Dashboard</span>
+                </button>
+
+                <button type="button"
+                        data-section="mybooks"
+                        class="teacher-link w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-slate-700 hover:bg-slate-50 transition">
+                    <span class="icon-wrap w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">📚</span>
+                    <span>Mening kitoblarim</span>
+                </button>
+
+                <button type="button"
+                        data-section="upload"
+                        class="teacher-link w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-slate-700 hover:bg-slate-50 transition">
+                    <span class="icon-wrap w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">⬆️</span>
+                    <span>Kitob yuklash</span>
+                </button>
+
+                <button type="button"
+                        data-section="library"
+                        class="teacher-link w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-slate-700 hover:bg-slate-50 transition">
+                    <span class="icon-wrap w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">🌐</span>
+                    <span>Umumiy kutubxona</span>
+                </button>
+
+                <button type="button"
+                        data-section="favorites"
+                        class="teacher-link w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-slate-700 hover:bg-slate-50 transition">
+                    <span class="icon-wrap w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">❤️</span>
+                    <span>Sevimli kitoblar</span>
+                </button>
+
+                <button type="button"
+                        data-section="profile"
+                        class="teacher-link w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-slate-700 hover:bg-slate-50 transition">
+                    <span class="icon-wrap w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">👤</span>
+                    <span>Profil</span>
+                </button>
+            </nav>
+
+            <div class="p-5 border-t border-slate-100 space-y-3">
+                <a href="{% url 'home_page' %}"
+                   class="flex items-center gap-3 px-4 py-3.5 text-slate-700 hover:bg-slate-50 rounded-2xl font-medium transition">
+                    <span class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">🏠</span>
+                    <span>Bosh sahifa</span>
+                </a>
+
+                <a href="{% url 'public_library' %}"
+                   class="flex items-center gap-3 px-4 py-3.5 text-slate-700 hover:bg-slate-50 rounded-2xl font-medium transition">
+                    <span class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">🌐</span>
+                    <span>Kutubxona</span>
+                </a>
+
+                <a href="{% url 'logout' %}"
+                   class="flex items-center gap-3 px-4 py-3.5 text-red-600 hover:bg-red-50 rounded-2xl font-medium transition">
+                    <span class="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-lg">🚪</span>
+                    <span>Chiqish</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="flex-1 overflow-auto">
+            <!-- TOPBAR -->
+            <div class="bg-white/90 backdrop-blur border-b border-slate-200 px-7 lg:px-8 py-4 flex items-center justify-between sticky top-0 z-20">
+                <div>
+                    <h2 id="page-title" class="text-xl font-bold text-slate-800">Dashboard</h2>
+                    <p id="page-subtitle" class="text-xs text-slate-500 mt-1">Ustoz uchun boshqaruv paneli</p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="hidden sm:flex items-center gap-2 bg-emerald-50 text-emerald-700 px-3 py-2 rounded-xl text-xs font-medium">
+                        <span class="text-emerald-500">●</span>
+                        Online
+                    </div>
+
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-semibold text-slate-800">
+                            {{ profile.first_name }} {{ profile.last_name }}
+                        </p>
+                        <p class="text-xs text-slate-400">O‘qituvchi</p>
+                    </div>
+
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg">
+                        {{ profile.first_name|slice:":1"|upper }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 lg:p-7">
+
+                <!-- DASHBOARD -->
+                <section id="dashboard-section" class="teacher-section active">
+                    <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5 mb-6">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#1554d1] mb-2">
+                                Ustoz kabineti
+                            </p>
+                            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 leading-tight">
+                                Xush kelibsiz, {{ profile.first_name }} 👋
+                            </h1>
+                            <p class="text-slate-500 mt-2 text-sm sm:text-base">
+                                Kitoblaringizni boshqaring, sevimlilarni ko‘ring va yangi material yuklang.
+                            </p>
+                        </div>
+
+                        <div class="flex flex-wrap gap-3">
+                            <a href="{% url 'teacher_book_add' %}"
+                               class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-[#1554d1] text-white font-semibold shadow-lg shadow-blue-200 hover:bg-[#0f45b0] transition">
+                                <span>➕</span>
+                                <span>Kitob yuklash</span>
+                            </a>
+
+                            <a href="{% url 'teacher_my_books' %}"
+                               class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl border border-slate-300 bg-white text-slate-700 font-semibold hover:bg-slate-50 transition">
+                                <span>📚</span>
+                                <span>Mening kitoblarim</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- STATS -->
+                    <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-white rounded-[24px] border border-blue-100 shadow-sm p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">📚</div>
+                                <div>
+                                    <p class="text-2xl font-extrabold text-slate-800 leading-none">{{ my_books_count|default:0 }}</p>
+                                    <p class="text-slate-500 text-xs mt-1">Mening kitoblarim</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-[24px] border border-blue-100 shadow-sm p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 bg-rose-100 rounded-xl flex items-center justify-center text-2xl">❤️</div>
+                                <div>
+                                    <p class="text-2xl font-extrabold text-slate-800 leading-none">{{ favorite_books_count|default:0 }}</p>
+                                    <p class="text-slate-500 text-xs mt-1">Sevimlilar</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-[24px] border border-blue-100 shadow-sm p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 bg-emerald-100 rounded-xl flex items-center justify-center text-2xl">🌐</div>
+                                <div>
+                                    <p class="text-2xl font-extrabold text-slate-800 leading-none">{{ total_books_count|default:0 }}</p>
+                                    <p class="text-slate-500 text-xs mt-1">Jami kitoblar</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-[24px] border border-blue-100 shadow-sm p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 bg-purple-100 rounded-xl flex items-center justify-center text-2xl">🏢</div>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-extrabold text-slate-800 truncate">{{ profile.department|default:"—" }}</p>
+                                    <p class="text-slate-500 text-xs mt-1">Kafedra</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CHART + PROFILE -->
+                    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 mb-6">
+                        <div class="xl:col-span-8 bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                            <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-800">Faollik grafigi</h2>
+                                    <p class="text-slate-500 mt-1 text-sm">Ustoz faoliyati bo‘yicha umumiy ko‘rsatkichlar</p>
+                                </div>
+                            </div>
+                            <div class="h-[250px]">
+                                <canvas id="teacherChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="xl:col-span-4 bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                            <div class="flex items-center justify-between gap-3 mb-4">
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-800">Profil</h2>
+                                    <p class="text-slate-500 mt-1 text-sm">Qisqa ma’lumot</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div class="bg-slate-50 rounded-xl p-3">
+                                    <p class="text-xs text-slate-500 mb-1">F.I.Sh</p>
+                                    <p class="font-semibold text-slate-800">{{ profile.first_name }} {{ profile.last_name }}</p>
+                                </div>
+
+                                <div class="bg-slate-50 rounded-xl p-3">
+                                    <p class="text-xs text-slate-500 mb-1">Kafedra</p>
+                                    <p class="font-semibold text-slate-800">{{ profile.department|default:"—" }}</p>
+                                </div>
+
+                                <div class="bg-slate-50 rounded-xl p-3">
+                                    <p class="text-xs text-slate-500 mb-1">Telefon</p>
+                                    <p class="font-semibold text-slate-800">{{ profile.phone|default:"—" }}</p>
+                                </div>
+
+                                <div class="bg-slate-50 rounded-xl p-3">
+                                    <p class="text-xs text-slate-500 mb-1">Login</p>
+                                    <p class="font-semibold text-slate-800">{{ profile.generated_login|default:profile.user.username }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LAST FAVORITES + LAST BOOKS -->
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                            <div class="flex items-center justify-between gap-3 mb-4">
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-800">Sevimli kitoblar</h2>
+                                    <p class="text-slate-500 mt-1 text-sm">Oxirgi saqlanganlar</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-3">
+                                {% for fav in latest_favorites %}
+                                <div class="flex items-center justify-between gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-slate-800 truncate text-sm">{{ fav.book.title }}</p>
+                                        <p class="text-xs text-slate-500 truncate">{{ fav.book.author }}</p>
+                                    </div>
+
+                                    {% if fav.book.category %}
+                                    <span class="shrink-0 text-[11px] bg-blue-100 text-blue-700 px-3 py-1.5 rounded-xl font-semibold">
+                                        {{ fav.book.category.name }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                {% empty %}
+                                <div class="rounded-xl border border-slate-100 bg-slate-50 p-6 text-center text-slate-500 text-sm">
+                                    Hozircha sevimli kitoblar yo‘q
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                            <div class="flex items-center justify-between gap-3 mb-4">
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-800">Oxirgi yuklaganlar</h2>
+                                    <p class="text-slate-500 mt-1 text-sm">So‘nggi kitoblaringiz</p>
+                                </div>
+                                <a href="{% url 'teacher_my_books' %}" class="text-sm text-blue-600 hover:underline">
+                                    Barchasi
+                                </a>
+                            </div>
+
+                            <div class="space-y-3">
+                                {% for book in latest_my_books %}
+                                <div class="flex items-center justify-between gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-slate-800 truncate text-sm">{{ book.title }}</p>
+                                        <p class="text-xs text-slate-500 truncate">{{ book.author }}</p>
+                                    </div>
+                                    <div class="flex gap-2 shrink-0">
+                                        <a href="{% url 'book_read' book.id %}"
+                                           class="px-3 py-2 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition">
+                                            O‘qish
+                                        </a>
+                                        <a href="{% url 'teacher_book_edit' book.id %}"
+                                           class="px-3 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg text-xs font-medium hover:bg-slate-50 transition">
+                                            Edit
+                                        </a>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="rounded-xl border border-slate-100 bg-slate-50 p-6 text-center text-slate-500 text-sm">
+                                    Hozircha siz yuklagan kitoblar yo‘q
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MY BOOKS -->
+                <section id="mybooks-section" class="teacher-section">
+                    <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                        <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800">Mening kitoblarim</h2>
+                                <p class="text-slate-500 mt-1 text-sm">Yuklagan kitoblaringizni ko‘rish va boshqarish</p>
+                            </div>
+                            <div class="flex flex-wrap gap-3">
+                                <a href="{% url 'teacher_my_books' %}"
+                                   class="px-5 py-3 rounded-2xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
+                                    Ro‘yxatga o‘tish
+                                </a>
+                                <button type="button"
+                                        onclick="showTeacherSection('dashboard')"
+                                        class="px-5 py-3 rounded-2xl border border-slate-300 bg-white text-slate-700 font-medium hover:bg-slate-50 transition">
+                                    Ortga qaytish
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-slate-600 text-sm leading-7">
+                            Bu bo‘lim orqali siz yuklagan kitoblaringizni ko‘rishingiz, qidirishingiz, tahrirlashingiz va o‘chirishingiz mumkin.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- UPLOAD -->
+                <section id="upload-section" class="teacher-section">
+                    <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                        <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800">Kitob yuklash</h2>
+                                <p class="text-slate-500 mt-1 text-sm">Yangi kitobni tizimga qo‘shish</p>
+                            </div>
+                            <div class="flex flex-wrap gap-3">
+                                <a href="{% url 'teacher_book_add' %}"
+                                   class="px-5 py-3 rounded-2xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
+                                    Yuklash sahifasi
+                                </a>
+                                <button type="button"
+                                        onclick="showTeacherSection('dashboard')"
+                                        class="px-5 py-3 rounded-2xl border border-slate-300 bg-white text-slate-700 font-medium hover:bg-slate-50 transition">
+                                    Ortga qaytish
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-slate-600 text-sm leading-7">
+                            Bu bo‘lim orqali PDF va muqova bilan birga yangi kitob yuklashingiz mumkin.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- LIBRARY -->
+                <section id="library-section" class="teacher-section">
+                    <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                        <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800">Umumiy kutubxona</h2>
+                                <p class="text-slate-500 mt-1 text-sm">Barcha mavjud kitoblarni ko‘rish</p>
+                            </div>
+                            <div class="flex flex-wrap gap-3">
+                                <a href="{% url 'public_library' %}"
+                                   class="px-5 py-3 rounded-2xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
+                                    Kutubxonaga o‘tish
+                                </a>
+                                <button type="button"
+                                        onclick="showTeacherSection('dashboard')"
+                                        class="px-5 py-3 rounded-2xl border border-slate-300 bg-white text-slate-700 font-medium hover:bg-slate-50 transition">
+                                    Ortga qaytish
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-slate-600 text-sm leading-7">
+                            Umumiy kutubxonadagi kitoblarni ko‘rish, filter qilish va online o‘qish mumkin.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- FAVORITES -->
+                <section id="favorites-section" class="teacher-section">
+                    <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                        <div class="flex items-center justify-between gap-4 mb-5 flex-wrap">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800">Sevimli kitoblar</h2>
+                                <p class="text-slate-500 mt-1 text-sm">Saqlangan kitoblar ro‘yxati</p>
+                            </div>
+
+                            <button type="button"
+                                    onclick="showTeacherSection('dashboard')"
+                                    class="px-5 py-3 rounded-2xl border border-slate-300 bg-white text-slate-700 font-medium hover:bg-slate-50 transition">
+                                Ortga qaytish
+                            </button>
+                        </div>
+
+                        <div class="space-y-3">
+                            {% for fav in latest_favorites %}
+                            <div class="flex items-center justify-between gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                <div class="min-w-0">
+                                    <p class="font-semibold text-slate-800 truncate text-sm">{{ fav.book.title }}</p>
+                                    <p class="text-xs text-slate-500 truncate">{{ fav.book.author }}</p>
+                                </div>
+                                <a href="{% url 'book_read' fav.book.id %}"
+                                   class="text-xs text-blue-600 font-medium hover:underline shrink-0">
+                                    O‘qish
+                                </a>
+                            </div>
+                            {% empty %}
+                            <div class="rounded-xl border border-slate-100 bg-slate-50 p-6 text-center text-slate-500 text-sm">
+                                Hozircha sevimli kitoblar yo‘q
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PROFILE -->
+                <section id="profile-section" class="teacher-section">
+                    <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                        <div class="flex items-center justify-between gap-4 mb-5 flex-wrap">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800">Profil</h2>
+                                <p class="text-slate-500 mt-1 text-sm">Ustoz ma’lumotlari</p>
+                            </div>
+
+                            <button type="button"
+                                    onclick="showTeacherSection('dashboard')"
+                                    class="px-5 py-3 rounded-2xl border border-slate-300 bg-white text-slate-700 font-medium hover:bg-slate-50 transition">
+                                Ortga qaytish
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-slate-50 rounded-xl p-3">
+                                <p class="text-xs text-slate-500 mb-1">Ism</p>
+                                <p class="font-semibold text-slate-800">{{ profile.first_name }}</p>
+                            </div>
+
+                            <div class="bg-slate-50 rounded-xl p-3">
+                                <p class="text-xs text-slate-500 mb-1">Familya</p>
+                                <p class="font-semibold text-slate-800">{{ profile.last_name }}</p>
+                            </div>
+
+                            <div class="bg-slate-50 rounded-xl p-3">
+                                <p class="text-xs text-slate-500 mb-1">Sharif</p>
+                                <p class="font-semibold text-slate-800">{{ profile.middle_name|default:"—" }}</p>
+                            </div>
+
+                            <div class="bg-slate-50 rounded-xl p-3">
+                                <p class="text-xs text-slate-500 mb-1">Jins</p>
+                                <p class="font-semibold text-slate-800">{{ profile.gender|default:"—" }}</p>
+                            </div>
+
+                            <div class="bg-slate-50 rounded-xl p-3">
+                                <p class="text-xs text-slate-500 mb-1">Kafedra</p>
+                                <p class="font-semibold text-slate-800">{{ profile.department|default:"—" }}</p>
+                            </div>
+
+                            <div class="bg-slate-50 rounded-xl p-3">
+                                <p class="text-xs text-slate-500 mb-1">Telefon</p>
+                                <p class="font-semibold text-slate-800">{{ profile.phone|default:"—" }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 flex flex-wrap gap-3">
+                            <a href="{% url 'home_page' %}"
+                               class="px-5 py-3 rounded-2xl border border-slate-300 bg-white text-slate-700 font-medium hover:bg-slate-50 transition">
+                                Bosh sahifa
+                            </a>
+                            <a href="{% url 'public_library' %}"
+                               class="px-5 py-3 rounded-2xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
+                                Kutubxona
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<style>
+    .teacher-link.active {
+        background: #eff6ff;
+        color: #1e3a8a;
+        font-weight: 600;
+    }
+
+    .teacher-link.active .icon-wrap {
+        background: #dbeafe;
+    }
+
+    .teacher-section {
+        display: none;
+    }
+
+    .teacher-section.active {
+        display: block;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    const teacherTitles = {
+        dashboard: {
+            title: "Dashboard",
+            subtitle: "Ustoz uchun boshqaruv paneli"
+        },
+        mybooks: {
+            title: "Mening kitoblarim",
+            subtitle: "Yuklagan kitoblaringiz bo‘limi"
+        },
+        upload: {
+            title: "Kitob yuklash",
+            subtitle: "Yangi kitob qo‘shish sahifasi"
+        },
+        library: {
+            title: "Umumiy kutubxona",
+            subtitle: "Barcha kitoblar bilan ishlash"
+        },
+        favorites: {
+            title: "Sevimli kitoblar",
+            subtitle: "Saqlangan kitoblar ro‘yxati"
+        },
+        profile: {
+            title: "Profil",
+            subtitle: "Ustoz ma’lumotlari"
+        }
+    };
+
+    function showTeacherSection(sectionName) {
+        document.querySelectorAll('.teacher-section').forEach(section => {
+            section.classList.remove('active');
+        });
+
+        document.querySelectorAll('.teacher-link').forEach(link => {
+            link.classList.remove('active');
+        });
+
+        const currentSection = document.getElementById(sectionName + '-section');
+        const currentButton = document.querySelector(`.teacher-link[data-section="${sectionName}"]`);
+        const pageTitle = document.getElementById('page-title');
+        const pageSubtitle = document.getElementById('page-subtitle');
+
+        if (currentSection) currentSection.classList.add('active');
+        if (currentButton) currentButton.classList.add('active');
+
+        if (pageTitle && teacherTitles[sectionName]) {
+            pageTitle.textContent = teacherTitles[sectionName].title;
+        }
+
+        if (pageSubtitle && teacherTitles[sectionName]) {
+            pageSubtitle.textContent = teacherTitles[sectionName].subtitle;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.teacher-link').forEach(button => {
+            button.addEventListener('click', function () {
+                const sectionName = this.getAttribute('data-section');
+                showTeacherSection(sectionName);
+            });
+        });
+
+        showTeacherSection('dashboard');
+
+        const ctx = document.getElementById('teacherChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: {{ chart_labels|safe }},
+                    datasets: [{
+                        data: {{ chart_data|safe }},
+                        backgroundColor: ['#3b82f6', '#1e3a8a', '#60a5fa', '#93c5fd'],
+                        borderWidth: 6,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    cutout: '68%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 22,
+                                font: { size: 13 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

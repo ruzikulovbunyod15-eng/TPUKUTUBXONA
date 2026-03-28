@@ -1,0 +1,208 @@
+{% extends "library/base.html" %}
+
+{% block title %}{{ book.title }} - Online o‘qish{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-sky-50">
+    <div class="max-w-screen-2xl mx-auto px-6 sm:px-8 lg:px-12 py-10">
+
+        <!-- Header -->
+        <div class="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-6 mb-8">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#1554d1] mb-2">
+                    Raqamli kutubxona
+                </p>
+                <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-900 leading-tight">
+                    {{ book.title }}
+                </h1>
+                <p class="text-slate-500 mt-2 text-base sm:text-lg">
+                    Faqat online o‘qish rejimi
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <a href="{% url 'public_library' %}"
+                   class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl border border-slate-300 bg-white text-slate-700 font-semibold hover:bg-slate-50 transition shadow-sm">
+                    <span>←</span>
+                    <span>Kutubxonaga qaytish</span>
+                </a>
+
+                {% if request.user.is_authenticated and request.user.is_staff %}
+                    <a href="{% url 'books_list' %}"
+                       class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl border border-slate-300 bg-white text-slate-700 font-semibold hover:bg-slate-50 transition shadow-sm">
+                        <span>📚</span>
+                        <span>Kitoblar ro‘yxati</span>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+
+            <!-- Left Info Panel -->
+            <div class="xl:col-span-4 space-y-6">
+
+                <!-- Book Card -->
+                <div class="bg-white rounded-[30px] border border-blue-100 shadow-sm overflow-hidden">
+                    <div class="relative h-96 bg-gradient-to-br from-blue-50 via-sky-50 to-indigo-100 overflow-hidden">
+                        {% if book.cover %}
+                            <img
+                                src="{{ book.cover.url }}"
+                                alt="{{ book.title }}"
+                                class="w-full h-full object-cover"
+                            >
+                        {% else %}
+                            <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 text-white px-6 text-center">
+                                <span class="text-7xl mb-4">📘</span>
+                                <p class="font-semibold text-xl line-clamp-2">
+                                    {{ book.title }}
+                                </p>
+                                <p class="text-sm text-white/80 mt-2 line-clamp-1">
+                                    {{ book.author }}
+                                </p>
+                            </div>
+                        {% endif %}
+
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent"></div>
+
+                        {% if book.category %}
+                        <div class="absolute top-4 left-4">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-white/90 text-blue-700 text-xs font-semibold shadow">
+                                {{ book.category.name }}
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <div class="text-white">
+                                <p class="text-sm text-white/80">Online o‘qish</p>
+                                <h2 class="font-bold text-xl line-clamp-2">{{ book.title }}</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 space-y-4">
+                        <div class="flex items-start justify-between gap-4">
+                            <span class="text-slate-500 font-medium">Muallif</span>
+                            <span class="text-slate-800 font-semibold text-right">{{ book.author }}</span>
+                        </div>
+
+                        <div class="flex items-start justify-between gap-4">
+                            <span class="text-slate-500 font-medium">Bo‘lim</span>
+                            <span class="text-slate-800 font-semibold text-right">
+                                {% if book.category %}{{ book.category.name }}{% else %}-{% endif %}
+                            </span>
+                        </div>
+
+                        <div class="flex items-start justify-between gap-4">
+                            <span class="text-slate-500 font-medium">Kalit so‘zlar</span>
+                            <span class="text-slate-800 font-semibold text-right">
+                                {{ book.keywords|default:"-" }}
+                            </span>
+                        </div>
+
+                        {% if book.uploaded_by %}
+                        <div class="flex items-start justify-between gap-4">
+                            <span class="text-slate-500 font-medium">Yuklagan</span>
+                            <span class="text-slate-800 font-semibold text-right">
+                                {{ book.uploaded_by.get_full_name|default:book.uploaded_by.username }}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Description -->
+                {% if book.description %}
+                <div class="bg-white rounded-[28px] border border-blue-100 shadow-sm p-6">
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Kitob tavsifi</h3>
+                    <p class="text-slate-600 leading-8 whitespace-pre-line">
+                        {{ book.description }}
+                    </p>
+                </div>
+                {% endif %}
+
+                <!-- Warning -->
+                <div class="bg-amber-50 border border-amber-200 rounded-[24px] p-5">
+                    <h3 class="text-base font-bold text-amber-900 mb-2">Muhim eslatma</h3>
+                    <p class="text-amber-800 leading-7">
+                        Ushbu sahifa faqat online o‘qish uchun mo‘ljallangan.
+                    </p>
+                </div>
+            </div>
+
+            <!-- PDF Viewer -->
+            <div class="xl:col-span-8">
+                <div class="bg-white rounded-[32px] border border-blue-100 shadow-sm overflow-hidden">
+                    <div class="px-6 sm:px-8 py-5 border-b border-slate-100 bg-slate-50/70">
+                        <h2 class="text-xl font-bold text-slate-800">PDF viewer</h2>
+                        <p class="text-slate-500 text-sm mt-1">
+                            Kitob sahifa ichida ko‘rsatiladi
+                        </p>
+                    </div>
+
+                    <div class="p-4 sm:p-6">
+                        {% if book.pdf_file %}
+                            <div class="rounded-[24px] overflow-hidden border border-slate-200 bg-slate-50">
+                                <object
+                                    data="{{ book.pdf_file.url }}#toolbar=0&navpanes=0&scrollbar=1&view=FitH"
+                                    type="application/pdf"
+                                    class="w-full h-[82vh] min-h-[760px] bg-white"
+                                >
+                                    <iframe
+                                        src="{{ book.pdf_file.url }}#toolbar=0&navpanes=0&scrollbar=1&view=FitH"
+                                        class="w-full h-[82vh] min-h-[760px] border-0 bg-white"
+                                        title="{{ book.title }}"
+                                    ></iframe>
+
+                                    <div class="p-12 text-center">
+                                        <div class="text-6xl mb-4">📄</div>
+                                        <h3 class="text-2xl font-bold text-slate-800 mb-2">PDF ochilmadi</h3>
+                                        <p class="text-slate-500 max-w-xl mx-auto">
+                                            Brauzer PDF ko‘rsatishni qo‘llamayapti yoki media sozlamada muammo bor.
+                                        </p>
+                                    </div>
+                                </object>
+                            </div>
+                        {% else %}
+                            <div class="rounded-[24px] border border-red-100 bg-red-50 p-12 text-center">
+                                <div class="text-6xl mb-4">📄</div>
+                                <h3 class="text-2xl font-bold text-slate-800 mb-2">PDF fayl topilmadi</h3>
+                                <p class="text-slate-500">
+                                    Ushbu kitob uchun PDF fayl mavjud emas yoki hali yuklanmagan.
+                                </p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Bottom Info -->
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white rounded-3xl border border-blue-100 shadow-sm p-5">
+                        <p class="text-sm text-slate-500 mb-2">Rejim</p>
+                        <h3 class="text-2xl font-extrabold text-slate-900">Online</h3>
+                        <p class="text-sm text-slate-500 mt-2">Brauzer ichida o‘qish</p>
+                    </div>
+
+                    <div class="bg-white rounded-3xl border border-blue-100 shadow-sm p-5">
+                        <p class="text-sm text-slate-500 mb-2">Fayl turi</p>
+                        <h3 class="text-2xl font-extrabold text-slate-900">PDF</h3>
+                        <p class="text-sm text-slate-500 mt-2">Kutubxona standarti</p>
+                    </div>
+
+                    <div class="bg-white rounded-3xl border border-blue-100 shadow-sm p-5">
+                        <p class="text-sm text-slate-500 mb-2">Holat</p>
+                        <h3 class="text-2xl font-extrabold text-slate-900">
+                            {% if book.pdf_file %}Tayyor{% else %}Mavjud emas{% endif %}
+                        </h3>
+                        <p class="text-sm text-slate-500 mt-2">Ko‘rish imkoniyati</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}
