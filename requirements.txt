@@ -1,4 +1,9 @@
+asgiref==3.11.1
+Django==6.0.3
 gunicorn==25.3.0
 packaging==26.0
-setuptools==82.0.1
-wheel==0.46.3
+pillow==12.1.1
+psycopg2-binary==2.9.11
+PyMuPDF==1.27.2.2
+sqlparse==0.5.5
+tzdata==2025.3
