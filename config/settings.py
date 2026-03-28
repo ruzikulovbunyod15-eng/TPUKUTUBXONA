@@ -1,25 +1,26 @@
-"""
-Django settings for Tpulib project.
-"""
-
-from pathlib import Path
 import os
+from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# =========================
-# XAVFSIZLIK
-# =========================
-SECRET_KEY = 'django-insecure-change-this-key'
+# 🔐 SECURITY
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-key')
 
-DEBUG = True
+DEBUG = False  # 🚀 PRODUCTION
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+# 🌐 HOSTLAR
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    'tpukutubxona.onrender.com',
+]
 
+# 🔒 CSRF
+CSRF_TRUSTED_ORIGINS = [
+    'https://tpukutubxona.onrender.com',
+]
 
-# =========================
-# INSTALLED APPS
-# =========================
+# 📦 APPS
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -28,37 +29,27 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Custom app
-    'library',
+    'library',  # sening app
 ]
 
-
-# =========================
-# MIDDLEWARE
-# =========================
+# ⚙️ MIDDLEWARE
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
 
+    # STATIC uchun kerak (MUHIM)
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
-# =========================
-# URLS
-# =========================
 ROOT_URLCONF = 'config.urls'
 
-
-# =========================
-# TEMPLATES (MUHIM!)
-# =========================
+# 🧠 TEMPLATE
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -75,16 +66,9 @@ TEMPLATES = [
     },
 ]
 
-
-# =========================
-# WSGI
-# =========================
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
-# =========================
-# DATABASE
-# =========================
+# 🗄 DATABASE (Hozircha SQLite ishlayveradi)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -92,72 +76,35 @@ DATABASES = {
     }
 }
 
-
-# =========================
-# PASSWORD VALIDATION
-# =========================
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        # minimal uzunlikni oshirdim
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-        'OPTIONS': {
-            'min_length': 6,
-        }
-    },
-]
-
-
-# =========================
-# LANGUAGE & TIME
-# =========================
+# 🌍 LANGUAGE
 LANGUAGE_CODE = 'uz'
-
 TIME_ZONE = 'Asia/Tashkent'
-
 USE_I18N = True
 USE_TZ = True
 
-
-# =========================
-# STATIC FILES
-# =========================
+# 📁 STATIC FILES
 STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
-
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'
+]
 
-# =========================
-# MEDIA FILES (PDF, rasm)
-# =========================
+# WhiteNoise (MUHIM)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# 📁 MEDIA
 MEDIA_URL = '/media/'
-
 MEDIA_ROOT = BASE_DIR / 'media'
 
-
-# =========================
-# LOGIN SETTINGS
-# =========================
+# 🔐 LOGIN
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/panel/admin/'
 LOGOUT_REDIRECT_URL = '/login/'
 
-# =========================
-# DEFAULT PRIMARY KEY
-# =========================
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-# =========================
-# ADMIN PANEL TEXT
-# =========================
-ADMIN_SITE_HEADER = "Tpulib Admin Panel"
-ADMIN_SITE_TITLE = "Tpulib"
-ADMIN_INDEX_TITLE = "Kutubxona boshqaruvi"
+# 🔒 SECURITY (optional lekin yaxshi)
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
